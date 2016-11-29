@@ -2,6 +2,8 @@
   "name": "event",
   "dependencies": {},
   "globalDependencies": {
-    "uuid": "registry:dt/uuid#3.3.0+20160728152600"
+    "chai": "registry:dt/chai#3.4.0+20160601211834",
+    "lodash": "registry:dt/lodash#4.14.0+20161110215204",
+    "mocha": "registry:dt/mocha#2.2.5+20161028141524"
   }
 }

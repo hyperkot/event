@@ -6,26 +6,25 @@
     "noImplicitUseStrict": true,
     "preserveConstEnums": true,
     "removeComments": false,
-    "target": "es5",
+    "target": "es6",
     "sourceMap": false,
     "inlineSourceMap": true,
     "inlineSources": true,
     "suppressImplicitAnyIndexErrors": true,
     "noEmitOnError": false,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./build",
     "pretty": true,
-    "rootDir": "./src",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
   "filesGlob": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ],
-  "exclude": [
-    "src/extern/**/*"
+  "files": [
+    "src/event.ts",
+    "test/basic.ts"
   ],
-  "files": [],
   "atom": {
     "rewriteTsconfig": false
   }
