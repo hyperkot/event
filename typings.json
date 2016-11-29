@@ -1,0 +1,7 @@
+{
+  "name": "event",
+  "dependencies": {},
+  "globalDependencies": {
+    "uuid": "registry:dt/uuid#3.3.0+20160728152600"
+  }
+}

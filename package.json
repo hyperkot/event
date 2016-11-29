@@ -1,6 +1,6 @@
 {
   "name": "event",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Alternative approach to implementing events concept. ",
   "main": "index.js",
   "scripts": {
@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/hyperkot/event/issues"
   },
-  "homepage": "https://github.com/hyperkot/event#readme"
+  "homepage": "https://github.com/hyperkot/event#readme",
+  "dependencies": {
+    "lodash": "^4.17.2",
+    "setimmediate": "^1.0.5",
+    "uid": "0.0.2",
+    "uuid": "^3.0.1"
+  }
 }

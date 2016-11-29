@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": true,
+    "preserveConstEnums": true,
+    "removeComments": false,
+    "target": "es5",
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noEmitOnError": false,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./build",
+    "pretty": true,
+    "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "filesGlob": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/extern/**/*"
+  ],
+  "files": [],
+  "atom": {
+    "rewriteTsconfig": false
+  }
+}
