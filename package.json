@@ -1,0 +1,26 @@
+{
+  "name": "event",
+  "version": "0.0.0",
+  "description": "Alternative approach to implementing events concept. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyperkot/event.git"
+  },
+  "keywords": [
+    "event",
+    "events",
+    "event-emitter",
+    "listener",
+    "radio"
+  ],
+  "author": "hyperkot",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/hyperkot/event/issues"
+  },
+  "homepage": "https://github.com/hyperkot/event#readme"
+}
