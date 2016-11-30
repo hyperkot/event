@@ -253,6 +253,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
             let differentContext: boolean = hConf.context !== context;
             let sameName = name && hConf.name && (name === hConf.name);
             let dontRemove: boolean;
+
             if (idToRemove !== null) {
                 dontRemove = idToRemove !== hConf.id;
             } else {
