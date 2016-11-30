@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/hyperkot/event#readme",
   "dependencies": {
+    "deep-strict-equal": "^0.2.0",
     "lodash": "^4.17.2",
     "setimmediate": "^1.0.5",
     "uuid": "^3.0.1"

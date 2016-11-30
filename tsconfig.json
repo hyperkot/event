@@ -23,6 +23,7 @@
   ],
   "files": [
     "src/event.ts",
+    "src/interfaces.ts",
     "test/basic.ts"
   ],
   "atom": {

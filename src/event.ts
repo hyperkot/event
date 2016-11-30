@@ -1,234 +1,52 @@
 /// <reference path="../typings/index.d.ts"/>
 
 import * as _ from 'lodash';
+import * as deepEqual from 'deep-strict-equal';
+import {
+    EventHandler,
+    EventHandlerOptions,
+    EventHandlerDescriptor,
+    EventTriggerer,
+    EventListener,
+    EventUnlistener,
+    EventOncer,
+    EventMatchListener,
+    EventMatchOncer,
+    EventWhener,
+    EventThener,
+    EventCatcher,
+    EventTrait,
+    Thenable,
+    EventEmitter,
+    EventTraitTrigger
+} from './interfaces';
 
 /**
- * A function, callback, which is called, when subject event occurs.
- * It is called with a single argument - it is the same argument that was passed to the
- * "trigger()" method call, which is the only way to make event "happen".
+ * Represents an event and proviedes various way to observe the event both
+ * externally and internally. Internally provides also a way to trigger the event.
  */
-export interface EventHandler<T> {
-    (eventArg: T): void
-}
-
-/**
- * The full configuration for a specific event-handler. It controls the way
- * the relevant event-handler function is invoked.
- */
-interface EventHandlerOptions<T> {
-    /** The actual handler function to be called when the event occurs. */
-    handler: EventHandler<T>;
-    
-    /** If this flag is set - the event handler will remove itself from the event
-    after first invocation. */
-    once?: boolean;
-    
-    /** If this field is specified, then handler will be called with that context. */
-    context?: Object;
-    
-    /** The name of the event handler. Used for identification. You may create two
-     * listeners, with same handler function, but different names - so that later,
-     * you can 'off'/'unlisten' a specific listener by name, while unlistening by
-     * handler function would've removed both listener.
-     */
-    name?: string;
-    
-    /**
-     * Always used in combination with following parameter 'matchValue' and is a
-     * flag, which means(if set) that only event invocations with argument equal
-     * to that predefined 'matchValue' should be passed to the handler function.
-     * Basically this is a shorthand for the code like this:
-     *
-     *  event.listen((arg) => {
-     *      if(arg === matchValue)) event.callHandler();
-     * });        
-     * 
-     * @type {[type]}
-     */
-    onlyMatching?: boolean;
-    
-    /**
-     * The value, to be matched if the 'onlyMatching' flag is set.
-     * @type {[type]}
-     */
-    matchValue?: T;
-}
-
-/**
- * This is the object which represents an existing handler internally in Event object.
- */
-interface EventHandlerDescriptor<T> extends EventHandlerOptions<T> {
-    id: number;
-}
-
-/**
- * The interface for the 'event.trigger()' method
- */
-export interface EventTriggerer<T> {
-    (arg: T): void
-}
-
-/**
- * The interface for the 'event.listen()' method
- */
-export interface EventListener<T> {
-    (handler: EventHandler<T>, context?: Object): void;
-    (name: string, h: EventHandler<T>, context?: Object): void;
-}
-
-/**
- * The interface for the 'event.unlisten()' method
- */
-export interface EventUnlistener<T> {
-    (handler: EventHandler<T>, context?: Object): void;
-    (context: Object): void;
-    (name: string): void;
-    (): void;
-}
-
-/**
- * The interface for the 'event.once()' method
- */
-export interface EventOncer<T> {
-    (handler: EventHandler<T>, context?: Object): void
-}
-
-/**
- * The interface for the 'event.match()' method
- */
-export interface EventMatchListener<T> {
-    (value: T, handler: EventHandler<T>, context?: Object): void;
-    (value: T, name: string, h: EventHandler<T>, context?: Object): void;
-}
-
-/**
- * The interface for the 'event.matchOnce()' method
- */
-export interface EventMatchOncer<T> {
-    (value: T, handler: EventHandler<T>, context?: Object): void;
-}
-
-/**
- * The interface for the 'event.when()' method
- */
-export interface EventWhener<T> {
-    (): Promise<T>;
-}
-
-/**
- * The interface for the 'event.then()' method
- */
-export interface EventThener<T> {
-    (onOk: Function, onFail: Function): Promise<T>;
-}
-
-/**
- * The interface for the 'event.catch()' method
- */
-export interface EventCatcher<T> {
-    (onFail: (err:any) => T|any): Promise<T>;
-}
-
-/**
- * In context of this library, an 'event-emitter' means the same as 'event/event-object',
- * except there is not triggering methods in event-emitter. Event emitter is
- * definition of the interface of the event which should be accessible by external
- * entity. The trigger method is considered to be internal to the object, which this
- * event belongs to. So only the object itself should be able to trigger its own events,
- * not any external object.
- * 
- * The common pattern i use is this:
- * - define a private/protected event property, explicitly named 'eventBlabla'
- * - define a public getter, returning EventEmitter, and named without the event prefix:
- * 
- *      class SomeAwesomeClass {
- *          private eventBlabla: Event<any> = new Event<any>();
- *          public get blabla(): EventEmitter<any> { return this.eventBlabla; }
- *      } 
- * 
- *      let x = new SomeAwesomeClass();
- *      x.blabla.listen(() => console.log('blablabla!'));
- * 
- */
-export interface EventEmitter<T> extends Thenable<T> {
-    /**
-     * Add event handler to this event. Optionally pass a context in second argument - 
-     * then when triggered this  event will call the 'h' handler with the given context.
-     */
-    listen(h: EventHandler<T>, context?: Object): number;
-    listen(name: string, h: EventHandler<T>, context?: Object): number;
-    /**
-     * Add event handler to this event, which will be called only when event is triggered
-     * with value, which is exactly(===) the same as the one you pass to the match 
-     * method as first argument
-     */
-    match(value: T, h: EventHandler<T>, context?: Object): number;
-    match(value: T, name: string, h: EventHandler<T>, context?: Object): number;
-
-    /**
-     * Adds an event handler.
-     * Combines the 'once' and the 'match' behaviours.
-     */
-    matchOnce(value: T, handler: EventHandler<T>, context?: Object): number;
-
-    /**
-     * An alias for the listen method.
-     */
-    on(h: EventHandler<T>, context?: Object): number;
-    on(name: string, h: EventHandler<T>, context?: Object): number;
-
-    /**
-     * An event actually fully implements a promise interface. That promise interface
-     * refers to the first time the event is triggered. So when you trigger any event
-     * for the first time - as a promise it is resolved with the value you pass to
-     * trigger method call.
-     * 
-     * The after method is a shortcut-helper - it just uses given handler on promise
-     * as both a 'then' and a 'catch' handler.
-     * 
-     */
-    after(onResolve: (result: T|any)=>any): Thenable<T>;
-
-    unlisten(handler: EventHandler<T>, context?: Object): void;
-    unlisten(context: Object): void;
-    unlisten(name: string): void;
-    unlisten(id: number): void;
-    unlisten(): void;
-    off(handler: EventHandler<T>, context?: Object): void;
-    off(context: Object): void;
-    off(name: string): void;
-    off(id: number): void;
-    off(): void;
-
-    pipe(other: EventEmitter<T>): void;
-
-    once(h: EventHandler<T>, context?: Object): number;
-
-    when(): Promise<T>;
-}
-
-export interface EventTrait<T> extends EventEmitter<T> {
-    trigger(arg: T): void;
-
-    getTriggerer(): EventTriggerer<T>;
-}
-
-export interface EventTraitTrigger<T> extends EventTrait<T> {
-    (arg: T): void;
-}
-
-export interface EventTraitedMethod<MethodT extends ()=>void, EventArgsT> extends EventTrait<EventArgsT> {
-}
-
-export interface Thenable<T> {
-    then(onResolve: (result: T)=>any, onReject?: (error: Error|any)=>any): Thenable<T>;
-    catch(onReject: (error: Error|any)=>any): Thenable<T>;
-} 
-
 export class Event<T> implements EventTrait<T>, Thenable<T> {
     private listeners: EventHandlerDescriptor<T>[] = [];
     private isBeingTriggered: boolean = false;
 
+    /* 
+    This whole thing with 'delegates' was desiged first of all to provide
+    a way to make mixin feature, which wouldn't create new closures all the time,
+    and so that the user never has to use closures or 'bind' to use any of
+    event object methods as callbacks passed somewhere, etc...
+
+    This 'delegate' code definitely could be shorter, and it is not the best way
+    to do it. Here is a good place to mention that this lib,
+    is created not for production sites, but for my own academical purposes,
+    so first of all it should be convinient for me, not taking into account other
+    people. I totally don't care about performance in this lib. I have no goal to
+    make the most fast or error-free thing right now. The goal of this library is
+    to implement the 'event-object' approach to events concept, and experiment 
+    with various possible API features, to find out which of them are usefull and
+    which are not really needed, or make API too complex. After finding out what i believe
+    is the most simple, laconic and clear API this lib could have - i'll cover it fully with
+    tests, and only after that will i even consider taking any performance issues into account.
+    */
     private triggerDelegate: EventTriggerer<T> = null;
 
     private listenDelegate: EventListener<T> = null;
@@ -279,6 +97,11 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         this.promise = new Promise((resolve: any) => { this.resolve = resolve; });
     }
     
+    /**
+     * Mix this events methods into the target object.
+     * This is a way to add the event functionality to some existing object,
+     * without messing with it's inheritance chain.
+     */
     mixin(target: any): EventTrait<T> {
         target.trigger = this.getTriggerer();
         target.getTriggerer = ()=>{
@@ -314,6 +137,10 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
      * Triggers the event with given argument, invoking all of its handlers, and if
      * the event is triggered for the first time - removing the once event handlers and
      * saving given argument inetrnally as first trigger argument.
+     * 
+     * The argument is optional, since event can be of void type (`x= new Event<void>()`),
+     * but if the event is not of a void type - you should allways pass an argument to
+     * the trigger method.
      */
     trigger(eventArg?: T): void {
         if (this.isBeingTriggered) {
@@ -364,6 +191,10 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         return id;
     };
 
+    /**
+     * Adds a listener, which will be invoked only if the event-argument is deeply-equal to
+     * the given value.
+     */
     match(value: T, h: EventHandler<T>, context?: Object): number;
     match(value: T, name: string, h: EventHandler<T>, context?: Object): number;
     match(value: T, ...args: any[]): number {
@@ -378,6 +209,9 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         return id;
     };
 
+    /**
+     * Combines 'match' and 'once' features.
+     */
     matchOnce(value: T, handler: EventHandler<T>, context: Object = null): number {
          return this.addListener({ context, handler, once: true, onlyMatching: true, matchValue: value });
     }
@@ -463,6 +297,10 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     after(onAny: (r: T|any)=>T|any): Promise<T> { return this.then(onAny).catch(onAny);}
     catch(onFail: (e: any)=>T|any): Promise<T> { return this.when().catch(onFail); }
 
+    /**
+     * Piping the events means that the other event must be triggered(happen) any time
+     * this event happens and with exactly the same argument.
+     */
     pipe(other: Event<T>): void {
         this.on(other.getTriggerer());
     }
@@ -483,51 +321,25 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         this.listeners.push({context, handler, once, id: this.idCounter, onlyMatching, matchValue});
         return this.idCounter;
     }
-
-    static event<EventT>(): PropertyDecorator {
-        return function (prototype: Object, eventName: string): PropertyDescriptor {
-            return {
-                configurable: true,
-                enumerable: false,
-                get() {
-                    let event = new Event<EventT>();
-                    Reflect.defineProperty(this, eventName, {
-                        configurable: false,
-                        enumerable: false,
-                        writable: false,
-                        value: event
-                    });
-                    return event;
-                }
-            }
-        }
-    }
-    static emits<EventT>(eventName: string) {
-
-        return function (prototype: Object, methodName: string, original: PropertyDescriptor): PropertyDescriptor {
-            let originalMethod: Function = original.value;
-            
-            let descriptor = {
-                configurable: false,
-                enumerable: false,
-                writeable: false,
-                value(...args: any[]) {
-                    let result = originalMethod.apply(this, args);
-                    this[eventName].trigger(result);
-                    return result;
-                }
-            };
-            return descriptor;
-        }
-    }
 }
 
-export function emits(name: string): MethodDecorator {
-    return Event.emits(name);
-}
-
-export function event(name: string): MethodDecorator {
-    return Event.emits(name);
+export {
+    EventHandler,
+    EventHandlerOptions,
+    EventHandlerDescriptor,
+    EventTriggerer,
+    EventListener,
+    EventUnlistener,
+    EventOncer,
+    EventMatchListener,
+    EventMatchOncer,
+    EventWhener,
+    EventThener,
+    EventCatcher,
+    EventTrait,
+    Thenable,
+    EventEmitter,
+    EventTraitTrigger,
 }
 
 export default Event;
