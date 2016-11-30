@@ -1,7 +1,7 @@
 /// <reference path="../typings/index.d.ts"/>
 
-import * as _ from 'lodash';
-import * as deepEqual from 'deep-strict-equal';
+import * as _ from "lodash";
+import * as deepEqual from "deep-strict-equal";
 import {
     EventHandler,
     EventHandlerOptions,
@@ -19,7 +19,7 @@ import {
     Thenable,
     EventEmitter,
     EventTraitTrigger
-} from './interfaces';
+} from "./interfaces";
 
 /**
  * Represents an event and proviedes various way to observe the event both
@@ -30,7 +30,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     private isBeingTriggered: boolean = false;
 
     /* 
-    This whole thing with 'delegates' was desiged first of all to provide
+    This whole thing with 'delegates' was designed first of all to provide
     a way to make mixin feature, which wouldn't create new closures all the time,
     and so that the user never has to use closures or 'bind' to use any of
     event object methods as callbacks passed somewhere, etc...
@@ -61,8 +61,9 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     private thenDelegate: EventThener<T> = null;
     private catchDelegate: EventCatcher<T> = null;
 
-    private promise: Promise<T> = null; 
-    private resolve: (value: T) => T;
+    private promise: Promise<T> = null;
+    private resolveInternalPromise: (value: T) => any;
+    private rejectInternalPromise: (value: any) => any;
     private isFirstTriggerDone: boolean = false;
 
     private idCounter: number = 0;
@@ -70,43 +71,33 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
 
     constructor() {
         this.triggerDelegate = (eventArg: T) => this.trigger(eventArg);
-        this.listenDelegate = (...args: any[]): void => {
-            return this.listen.apply(this, args);
-        };
-        this.matchDelegate = (...args: any[]): void => {
-            return this.match.apply(this, args);
-        };
-        this.matchOnceDelegate = (...args: any[]): void => {
-            return this.matchOnce.apply(this, args);
-        }; 
-        this.unlistenDelegate = (...args: any[]): void => {
-            return this.unlisten.apply(this, args);
-        };
+        this.listenDelegate = (...args: any[]): void => this.listen.apply(this, args);
+        this.matchDelegate = (...args: any[]): void => this.match.apply(this, args);
+        this.matchOnceDelegate = (...args: any[]): void => this.matchOnce.apply(this, args);
+        this.unlistenDelegate = (...args: any[]): void => this.unlisten.apply(this, args);
         this.onceDelegate = (handler: EventHandler<T>, context: Object = null) => {
-            return this.once(handler, context);
+            this.once(handler, context);
         };
-        this.whenDelegate = () => {
-            return this.when();
-        };
+        this.whenDelegate = () => this.when();
         this.thenDelegate = (onOk: EventHandler<T>, onFail: Function) => {
             return this.then(onOk, <any>onFail);
         };
-        this.catchDelegate = (onFail: Function) => {
-            return this.catch(<any>onFail);
-        };
-        this.promise = new Promise((resolve: any) => { this.resolve = resolve; });
+        this.catchDelegate = (onFail: Function) => this.catch(<any>onFail);
+
+        this.promise = new Promise((resolve: (value: T) => void, reject: (e: any) => void) => {
+            this.resolveInternalPromise = resolve;
+            this.rejectInternalPromise = reject;
+        });
     }
-    
+
     /**
-     * Mix this events methods into the target object.
+     * Mix this event's methods into the target object.
      * This is a way to add the event functionality to some existing object,
      * without messing with it's inheritance chain.
      */
     mixin(target: any): EventTrait<T> {
         target.trigger = this.getTriggerer();
-        target.getTriggerer = ()=>{
-            return this.getTriggerer();
-        }
+        target.getTriggerer = () => this.getTriggerer();
 
         target.listen = this.getListener();
         target.match = this.getMatchListener();
@@ -117,7 +108,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
 
         target.when = this.getWhener();
         target.then = this.getThener();
-        target.catch  =this.getCatcher();
+        target.catch = this.getCatcher();
 
         return target;
     }
@@ -149,17 +140,16 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         this.isBeingTriggered = true;
         if (!this.isFirstTriggerDone) {
             this.isFirstTriggerDone = true;
-            this.resolve(eventArg);
+            this.resolveInternalPromise(eventArg);
         }
-        this.listeners.slice().forEach((listener) => {
+        this.listeners.slice().forEach((listener: EventHandlerDescriptor<T>) => {
             let doCall = true;
             if (listener.onlyMatching) {
                 doCall = listener.matchValue === eventArg;
             }
-            
             if (doCall) {
                 if (listener.context) {
-                    listener.handler.call(listener.context, eventArg); 
+                    listener.handler.call(listener.context, eventArg);
                 } else {
                     listener.handler.call(null, eventArg);
                 }
@@ -169,7 +159,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
             }
         });
         this.isBeingTriggered = false;
-    }  
+    }
 
     /**
      * Adds a listener. If once=true then adds once listener which means that listener will be removed,
@@ -181,7 +171,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     listen(name: string, h: EventHandler<T>, context?: Object): number;
     listen(...args: any[]): number {
         let id: number;
-        if (typeof args[0] === 'string') {
+        if (typeof args[0] === "string") {
             let [name, handler, context] = args;
             id = this.addListener({ name, handler, context });
         } else {
@@ -199,7 +189,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     match(value: T, name: string, h: EventHandler<T>, context?: Object): number;
     match(value: T, ...args: any[]): number {
         let id: number;
-        if (typeof args[0] === 'string') {
+        if (typeof args[0] === "string") {
             let [name, handler, context] = args;
             id = this.addListener({ name, handler, context, onlyMatching: true, matchValue: value });
         } else {
@@ -216,12 +206,15 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
          return this.addListener({ context, handler, once: true, onlyMatching: true, matchValue: value });
     }
 
+    /**
+     * Adds a listener to the event
+     */
     once(handler: EventHandler<T>, context: Object = null): number {
          return this.addListener({ context, handler, once: true });
     }
 
     /**
-     * Remove a listener(s). When no context given removes all listeners, that were attached
+     * Remove a listener(s). When no context given removes all listeners that were attached
      * without a context. When a context is given removes only listeners that were attached with
      * that context and doesn't remove any listeners that were attached without a context.
      */
@@ -235,11 +228,11 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         switch (args.length) {
             case 0: this.listeners = []; return;
             case 1:
-                if (typeof args[0] === 'string') {
+                if (typeof args[0] === "string") {
                     name = args[0];
                     handler = args[1];
                     context = args[2];
-                } else if (typeof args[0] === 'number') {
+                } else if (typeof args[0] === "number") {
                     idToRemove = args[0];
                 } else {
                     handler = args[0];
@@ -250,7 +243,8 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
                 handler = args[0];
                 context = args[1];
                 break;
-            
+            default:
+                throw new Error("Event@unlisten(): unsupported arguments format.");
         }
         this.listeners = _.filter(this.listeners, (hConf: EventHandlerDescriptor<T>) => {
             let differentHandler: boolean = hConf.handler !== handler;
@@ -272,7 +266,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
                     }
                 }
             }
-            
+
             return dontRemove;
         });
     }
@@ -292,10 +286,21 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         return this.unlisten.apply(this, arguments);
     }
 
-    when(): Promise<T> { return this.promise; }
-    then(onOk: (r: T)=> T|any, onFail?: (e: any)=>T|any): Promise<T> { return this.when().then(onOk, onFail); }
-    after(onAny: (r: T|any)=>T|any): Promise<T> { return this.then(onAny).catch(onAny);}
-    catch(onFail: (e: any)=>T|any): Promise<T> { return this.when().catch(onFail); }
+    when(): Promise<T> {
+        return this.promise;
+    }
+
+    then(onOk: (r: T) => T|any, onFail?: (e: any) => T|any): Promise<T> {
+        return this.when().then(onOk, onFail);
+    }
+
+    after(onAny: (r: T|any) => T|any): Promise<T> {
+        return this.then(onAny).catch(onAny);
+    }
+
+    catch(onFail: (e: any) => T|any): Promise<T> {
+        return this.when().catch(onFail);
+    }
 
     /**
      * Piping the events means that the other event must be triggered(happen) any time

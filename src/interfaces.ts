@@ -6,7 +6,7 @@
  * "trigger()" method call, which is the only way to make event "happen".
  */
 export interface EventHandler<T> {
-    (eventArg: T): void
+    (eventArg: T): void;
 }
 
 /**
@@ -16,21 +16,21 @@ export interface EventHandler<T> {
 export interface EventHandlerOptions<T> {
     /** The actual handler function to be called when the event occurs. */
     handler: EventHandler<T>;
-    
+
     /** If this flag is set - the event handler will remove itself from the event
     after first invocation. */
     once?: boolean;
-    
+
     /** If this field is specified, then handler will be called with that context. */
     context?: Object;
-    
+
     /** The name of the event handler. Used for identification. You may create two
      * listeners, with same handler function, but different names - so that later,
      * you can 'off'/'unlisten' a specific listener by name, while unlistening by
      * handler function would've removed both listener.
      */
     name?: string;
-    
+
     /**
      * Always used in combination with following parameter 'matchValue' and is a
      * flag, which means(if set) that only event invocations with argument equal
@@ -44,7 +44,7 @@ export interface EventHandlerOptions<T> {
      * @type {[type]}
      */
     onlyMatching?: boolean;
-    
+
     /**
      * The value, to be matched if the 'onlyMatching' flag is set.
      * @type {[type]}
@@ -63,7 +63,7 @@ export interface EventHandlerDescriptor<T> extends EventHandlerOptions<T> {
  * The interface for the 'event.trigger()' method
  */
 export interface EventTriggerer<T> {
-    (arg: T): void
+    (arg: T): void;
 }
 
 /**
@@ -88,7 +88,7 @@ export interface EventUnlistener<T> {
  * The interface for the 'event.once()' method
  */
 export interface EventOncer<T> {
-    (handler: EventHandler<T>, context?: Object): void
+    (handler: EventHandler<T>, context?: Object): void;
 }
 
 /**
@@ -124,7 +124,7 @@ export interface EventThener<T> {
  * The interface for the 'event.catch()' method
  */
 export interface EventCatcher<T> {
-    (onFail: (err:any) => T|any): Promise<T>;
+    (onFail: (err: any) => T|any): Promise<T>;
 }
 
 /**
@@ -188,7 +188,7 @@ export interface EventEmitter<T> extends Thenable<T> {
      * as both a 'then' and a 'catch' handler.
      * 
      */
-    after(onResolve: (result: T|any)=>any): Thenable<T>;
+    after(onResolve: (result: T|any) => any): Thenable<T>;
 
     /**
      * Removes an event handler or several. Which handlers get removed depends on the arguments.
@@ -225,10 +225,12 @@ export interface EventTraitTrigger<T> extends EventTrait<T> {
     (arg: T): void;
 }
 
-export interface EventTraitedMethod<MethodT extends ()=>void, EventArgsT> extends EventTrait<EventArgsT> {
+export interface EventTraitedMethod<
+    MethodT extends () => void, EventArgsT
+> extends EventTrait<EventArgsT> {
 }
 
 export interface Thenable<T> {
-    then(onResolve: (result: T)=>any, onReject?: (error: Error|any)=>any): Thenable<T>;
-    catch(onReject: (error: Error|any)=>any): Thenable<T>;
+    then(onResolve: (result: T) => any, onReject?: (error: Error|any) => any): Thenable<T>;
+    catch(onReject: (error: Error|any) => any): Thenable<T>;
 }
