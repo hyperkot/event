@@ -26,6 +26,11 @@ which automatically deattaches after being triggered the first time) and the oth
 is 'match'(attaching a listener which is invoked only if event's argument deeply-equals
 some given value).
 
+I don't deem this library acceptable for production code right now but I still use it a lot
+in a various experimental apllications I write all the time. So test coverage is close to none,
+since the majority of API is subject to change. However basic 'on', 'off', 'trigger'
+functionality is used a lot on practice and works pretty fine.
+
 ## API principles and reasoning behind them.
 - There are some aliases for some methods. This is a questionable decision from the api
 cleanliness point of view. However it stands for now since some names are short and well-known
