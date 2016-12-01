@@ -131,7 +131,7 @@ export interface EventCatcher<T> {
  * In context of this library, an 'event-emitter' means the same as 'event/event-object',
  * except there is not triggering methods in event-emitter. Event emitter is
  * definition of the interface of the event which should be accessible by external
- * entity. The trigger method is considered to be internal to the object, which this
+ * entities. The trigger method is considered to be internal to the object, which this
  * event belongs to. So only the object itself should be able to trigger its own events,
  * not any external object.
  * 

@@ -57,10 +57,46 @@ I just hate using bind and creating one-liner closures all over the place so muc
         internally for methods of this class.
     - EventEmitter is 'public' variant of EventTrait. The main difference - it has no 'trigger'
         method.
-        
+
     I strongly believe that events of any class should be triggered only internally by the
 methods of this class - otherwise the source cohesion might become so high that maintaing
 that source would require an effort close to the effort needed to rewrite it completely.
+- There are several additional features that are implemented by this library. All those are
+subject to the research which is the goal of this lib for now as described above. This means
+they all are subject to change. 
+    - **once** - a well-known feature for many event-emitters, works just as expected.
+    - **match** - attaching a listener which is invoked only when the event is triggered with
+        the argument deeply-equal to the valued passed to 'match' method. This seemed a
+        usefull feature while working with keyboard events and more specifically - defining
+        handlers for different keys on the same keyboard-handling event.
+        (This feature is subject to detailed testing)
+    - **mixin** - usefull sometimes but very questionable feature, since describing types
+        when mixin functionality in object without inheritance is often problematic. This lib has
+        it's own flavour of mixin concept - mixin is a instance method - it mixes not just abstract
+        event functionality but the methods bound to specific existing event.
+        (Overally this feature is still subject to basic testing at least)
+    - **thenable** - Event implements standard Promise interface(then/catch) - and may be used as a
+        Promise(right now that is a subject to carefull and detailed testing). The meaning of the
+        event-promise is that it has been triggered for the first time. This IMO elegantly solves
+        a common unpleasant scenario when you have some object with some event like 'initialized'
+        which is triggered only once. And the problem is that the 'addListener' interface would be
+        only available after the has occurred) So internal event promise mechanism stores the
+        argument of the first trigger and resolves the event-promise with it. The benefit is that
+        with Promise-like interface we can subscribe for such event anywhere we deem right - and
+        it will invoke the handler right away if the event has ocurred before or just attach a 
+        listener the same way that method 'once' does it.
+        This feature certainly creates some overhead which I accept for now.
+        And there is also a difference between 'once' and 'then' which you have to understand
+        clearly to use this feature: you can attach listener with 'once' method then trigger the
+        event then attach it once again and trigger event again. In case of ;once' - first time the
+        listener is triggered with first trigger argument and detached. Second time listener is
+        attached again and invoked with second trigger argument. Promise-handlers are not detached.
+        So if you attach a handler with 'then' second time after the event was triggered for the
+        first time - this handler will be invoked immediately with *FIRST* trigger argument and
+        will be totally unaware of the event being triggered the second time. In fact the promise
+        interface describes only the first time event being triggered for the whole time of it's
+        existance and there is no way to make promise-interface to be invoked on any other event
+        occurence.
 
 ## Dependencies
 
