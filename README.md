@@ -40,6 +40,10 @@ with core functionality - starting from some point it shouldn't change much.
 So i can afford myself to write a long and hard-to-maintain code just to ensure that
 code analysis and instrumenting tools run in the most effective and effective way.
 It also helps to lower the complexity of code.
+- There was no comments initially. I added them only before making this repo public.
+I'm used to comment source with jsdocs when needed but not in case of TypeScript - it has
+more meta data described by it's syntax than jsdocs could support. So jsdocs here would be just
+excessive the only thing to expect from comments is descriptions.
 
 ## Dependencies
 
@@ -58,7 +62,7 @@ There are several other things which may be needed:
 When the source is compiled and bundled it may imported diectly without any prerequisites, but
 to build from source and to work with source y will need several simple tools.
 
-- **typings** *(npm)* - automation tool for installing typescript definitions for known npm-modules.
+- **typings** *(npm)* - a tool for installing typescript definitions for known node-modules.
 Should be installed globally. Installs as any global node-modules: `npm i -g typings`. 
 On most linux platforms this will require either to use `sudo` or to grant yourself the rights
 to write in '/usr/lib/node_modules' or something like that - hopefully this is not your first
