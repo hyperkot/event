@@ -15,7 +15,8 @@
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "listFiles": true
   },
   "filesGlob": [
     "src/**/*.ts",

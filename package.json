@@ -4,11 +4,14 @@
   "description": "Alternative approach to implementing events concept. ",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "nodemon -w . -x \"tsfind && tsc -p . && mocha\" -d 1 -i \"*.js\" -e ts",
+    "build": "tsfind && tsc -p . && echo '# Build: OK.'",
+    "lint": "tslint --project ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyperkot/event.git"
+    "url": "git+https://github.com/hyperkot/event-property.git"
   },
   "keywords": [
     "event",
@@ -20,9 +23,9 @@
   "author": "hyperkot",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/hyperkot/event/issues"
+    "url": "https://github.com/hyperkot/event-property/issues"
   },
-  "homepage": "https://github.com/hyperkot/event#readme",
+  "homepage": "https://github.com/hyperkot/event-property#readme",
   "dependencies": {
     "deep-strict-equal": "^0.2.0",
     "lodash": "^4.17.2",
