@@ -94,6 +94,8 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
      * Mix this event's methods into the target object.
      * This is a way to add the event functionality to some existing object,
      * without messing with it's inheritance chain.
+     * The important thing here is that this mixes the function of this specific event.
+     * See the static mixin method for classic mixin.
      */
     mixin(target: any): EventTrait<T> {
         target.trigger = this.getTriggerer();
@@ -113,15 +115,41 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         return target;
     }
 
-    /** Returns a context-independent callback that triggers the event with given argument */
+    private static augmentedObjects: WeakMap<any, Event<any>> =
+        new WeakMap<any, Event<any>>();
+
+    /**
+     * Mixin event into some object - classic mixin behaviour, excpet its fine to call it with
+     * the same target several times - it will mix event only once.
+     * Returns the target, but since mixin was successfull - it now implements the
+     * EventTrait interface.
+     */
+    static mixin<MixinArgT>(target: Object|any): EventTrait<MixinArgT> {
+        if (!this.augmentedObjects.has(target)) {
+            let event = new Event<MixinArgT>();
+            event.mixin(target);
+            this.augmentedObjects.set(target, event);
+        }
+        return target;
+    }
+
+    /** Returns a context-independent callback which calls 'trigger' method of this event */
     getTriggerer(): EventTriggerer<T> { return this.triggerDelegate; }
+    /** Returns a context-independent callback which calls 'listen' method of this event */
     getListener(): EventListener<T> { return this.listenDelegate; }
+    /** Returns a context-independent callback which calls 'match' method of this event */
     getMatchListener(): EventMatchListener<T> { return this.matchDelegate; }
+    /** Returns a context-independent callback which calls 'matchOnce' method of this event */
     getMatchOncer(): EventMatchOncer<T> { return this.matchOnceDelegate; }
+    /** Returns a context-independent callback which calls 'unlisten' method of this event */
     getUnlistener(): EventUnlistener<T> { return this.unlistenDelegate; }
+    /** Returns a context-independent callback which calls 'once' method of this event */
     getOncer(): EventOncer<T> { return this.onceDelegate; }
+    /** Returns a context-independent callback which calls 'when' method of this event */
     getWhener(): EventWhener<T> { return this.whenDelegate; }
+    /** Returns a context-independent callback which calls 'then' method of this event */
     getThener(): EventThener<T> { return this.thenDelegate; }
+    /** Returns a context-independent callback which calls 'catch' method of this event */
     getCatcher(): EventCatcher<T> { return this.catchDelegate; }
 
     /**

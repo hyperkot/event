@@ -215,6 +215,11 @@ export interface EventEmitter<T> extends Thenable<T> {
     when(): Promise<T>;
 }
 
+/**
+ * This interface describes any object, supporting event(i mean event from this lib) functionality.
+ * It can be an Event, an instance of class which inherits Event, or an object that was augmented
+ * with `Event.mixin` method.
+ */
 export interface EventTrait<T> extends EventEmitter<T> {
     trigger(arg: T): void;
 
