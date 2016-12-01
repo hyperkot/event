@@ -224,7 +224,10 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     unlisten(id: number): void;
     unlisten(): void;
     unlisten(...args: any[]): void {
-        let name: string = null, context: Object, handler: EventHandler<T>, idToRemove: number = null; 
+        let name: string = null,
+            context: Object,
+            handler: EventHandler<T>,
+            idToRemove: number = null;
         switch (args.length) {
             case 0: this.listeners = []; return;
             case 1:
