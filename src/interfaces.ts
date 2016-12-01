@@ -208,6 +208,10 @@ export interface EventEmitter<T> extends Thenable<T> {
     off(id: number): void;
     off(): void;
 
+    /**
+     * Piping the event to another one means that whenever the first one is triggered - the
+     * second one is triggered automatically with exactly the same argument
+     */
     pipe(other: EventEmitter<T>): void;
 
     once(h: EventHandler<T>, context?: Object): number;
@@ -224,15 +228,6 @@ export interface EventTrait<T> extends EventEmitter<T> {
     trigger(arg: T): void;
 
     getTriggerer(): EventTriggerer<T>;
-}
-
-export interface EventTraitTrigger<T> extends EventTrait<T> {
-    (arg: T): void;
-}
-
-export interface EventTraitedMethod<
-    MethodT extends () => void, EventArgsT
-> extends EventTrait<EventArgsT> {
 }
 
 export interface Thenable<T> {

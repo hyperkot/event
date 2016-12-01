@@ -44,6 +44,23 @@ It also helps to lower the complexity of code.
 I'm used to comment source with jsdocs when needed but not in case of TypeScript - it has
 more meta data described by it's syntax than jsdocs could support. So jsdocs here would be just
 excessive the only thing to expect from comments is descriptions.
+- Getters of context-bound variants of all methods imaginable as callbacks are provided.
+I just hate using bind and creating one-liner closures all over the place so much...)
+- Event may have only one argument. Any set of arguments may be presented as an object with
+    corresponding fields and this in fact is usually a clearer way to present arguments.
+    Supporting multiple arguments would make all source code a bit more complex and there is
+    no required functionality which cannot be written without using variable argument lists.
+    Actually i believe that one has to have irresistable arguments to use this JS/TS language
+    feature in some simple core library.
+- There are two interfaces which may present the event object: EventEmitter and EventTrait.
+    - EventTrait describes full Event class api - this is how events of class should be described
+        internally for methods of this class.
+    - EventEmitter is 'public' variant of EventTrait. The main difference - it has no 'trigger'
+        method.
+        
+    I strongly believe that events of any class should be triggered only internally by the
+methods of this class - otherwise the source cohesion might become so high that maintaing
+that source would require an effort close to the effort needed to rewrite it completely.
 
 ## Dependencies
 
@@ -86,7 +103,7 @@ This is the way i prefer to work. Right now i start it with
 `nodemon -w . -x "tsc -p . && mocha" -d 1 -i "*.js" -e ts` command.
 And i have to restart it manually only after system restart, or something like that.
 - **tslint** *(npm)* - this one is a recommendation too. I don't even run it myself - it is
-integrated into the ide i use, which is Visual Studio Code. 
+integrated into the ide i use, which is Visual Studio Code.
 
 ## CLI commands
 Many of the tools, described above are integrated into npm cli(project.json), so it simple to
