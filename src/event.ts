@@ -17,8 +17,7 @@ import {
     EventCatcher,
     EventTrait,
     Thenable,
-    EventEmitter,
-    EventTraitTrigger
+    EventEmitter
 } from "./interfaces";
 
 /**
@@ -375,8 +374,7 @@ export {
     EventCatcher,
     EventTrait,
     Thenable,
-    EventEmitter,
-    EventTraitTrigger,
+    EventEmitter
 }
 
 export default Event;

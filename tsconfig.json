@@ -16,14 +16,18 @@
     "pretty": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "listFiles": true
+    "listFiles": false,
+    "listEmittedFiles": true,
+    "declaration": false
   },
   "filesGlob": [
     "src/**/*.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "!**/*.d.ts"
   ],
   "files": [
     "src/event.ts",
+    "src/index.ts",
     "src/interfaces.ts",
     "test/basic.ts"
   ],

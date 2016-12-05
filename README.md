@@ -69,7 +69,7 @@ that source would require an effort close to the effort needed to rewrite it com
 - There are several additional features that are implemented by this library. All those are
 subject to the research which is the goal of this lib for now as described above. This means
 they all are subject to change. 
-    - **once** - a well-known feature for many event-emitters, works just as expected.
+    - **once** - a well-known feature for many event-emitters. Works just as expected.
     - **match** - attaching a listener which is invoked only when the event is triggered with
         the argument deeply-equal to the valued passed to 'match' method. This seemed a
         usefull feature while working with keyboard events and more specifically - defining
@@ -145,15 +145,18 @@ This is the way i prefer to work. Right now i start it with
 And i have to restart it manually only after system restart, or something like that.
 - **tslint** *(npm)* - this one is a recommendation too. I don't even run it myself - it is
 integrated into the ide i use, which is Visual Studio Code.
+- **gulp** *(npm)* - some tasks are implemented in gulp so this is a requirement in order to
+make bundle from source with predefined commands.
 
 ## CLI commands
-Many of the tools, described above are integrated into npm cli(project.json), so it simple to
-launch common tasks:  
-<span style="font-size: 12px">_Though some of those commands may not work on Windows platform or something other
-than linux at all._</span> 
-- `npm start` - starts the workflow automation with nodemon,
+Many of the tool which ares described above are integrated into npm cli(project.json),
+so it simple to launch common tasks:  
+<span style="font-size: 12px">_Though some of those commands may not work on Windows platform or
+something other than linux at all._</span> 
+- `npm start` - starts the workflow automation with _nodemon_,
     which is basically re-running build on source code changes and running tests afterwards.
 - `npm test` - just run mocha, the source should be already built at this time.
-- `npm run build` - update source lists with tsfind and compile the source.
+- `npm run build` - bundle the library into a single js file(`index.js`);
+- `gulp` - shorter than `npm run build`. Does the same thing. Note that build doesn't run tests.
 - `npm run lint` - run tslint on the source.
 
