@@ -287,7 +287,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
             default:
                 throw new Error("Unsupported arguments format.");
         }
-        console.log('old:', this.listeners);
+        
         this.listeners = _.filter(this.listeners, (hConf: EventHandlerDescriptor<T>) => {
             let differentHandler: boolean = hConf.handler !== handler;
             let noHandlerGiven: boolean = !handler;
@@ -323,10 +323,8 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
                     }
                 }
             }
-            console.log('dr:',dontRemove);
             return dontRemove;
         });
-        console.log('new:', this.listeners);
     }
 
     on(name: string, h: EventHandler<T>): number;

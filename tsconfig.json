@@ -29,7 +29,8 @@
     "src/event.ts",
     "src/index.ts",
     "src/interfaces.ts",
-    "test/basic.ts"
+    "test/basic.ts",
+    "test/mixin.ts"
   ],
   "atom": {
     "rewriteTsconfig": false
