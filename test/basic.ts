@@ -81,8 +81,21 @@ describe("Core functionality: construction of event, triggering, listening", () 
                 chai.expect(this).to.be.equal(listener);
                 done();
             }
-        }
+        };
         event.listen(listener.fn, listener);
+        event.trigger();
+    });
+    it('correctly adds and removes named handlers', () => {
+        let event = new Event<void>();
+        const testName = 'test';
+        let tCount = 0;
+        let handler = () => {
+            tCount++;
+            chai.expect(tCount).to.be.equal(1);
+        };
+        event.on(testName, handler);
+        event.trigger();
+        event.off(testName);
         event.trigger();
     });
 });

@@ -1,3 +1,4 @@
+import * as http from 'http';
 /// <reference path="../typings/index.d.ts"/>
 
 import * as _ from "lodash";
@@ -172,7 +173,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         this.listeners.slice().forEach((listener: EventHandlerDescriptor<T>) => {
             let doCall = true;
             if (listener.onlyMatching) {
-                doCall = listener.matchValue === eventArg;
+                doCall = deepEqual(listener.matchValue, eventArg);
             }
             if (doCall) {
                 if (listener.context) {
@@ -252,34 +253,47 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     unlisten(): void;
     unlisten(...args: any[]): void {
         let name: string = null,
-            context: Object,
-            handler: EventHandler<T>,
+            context: Object = null,
+            handler: EventHandler<T> = null,
             idToRemove: number = null;
         switch (args.length) {
-            case 0: this.listeners = []; return;
+            case 0: // No arguments - clear all listeners 
+                this.listeners = [];
+                return;
             case 1:
                 if (typeof args[0] === "string") {
                     name = args[0];
-                    handler = args[1];
-                    context = args[2];
+                    handler = null;
+                    context = null;
                 } else if (typeof args[0] === "number") {
                     idToRemove = args[0];
-                } else {
+                } else if (typeof args[0] === "function") { 
+                    name = null;
                     handler = args[0];
-                    context = args[1];
-                };
+                    context = null;
+                } else if (typeof args[0] === "object") {
+                    name = null;
+                    handler = null;
+                    context = args[0];
+                } else {
+                    throw new Error(`Invalid argument: ${typeof args[0]}`);
+                }
                 break;
             case 2:
+                name = null;
                 handler = args[0];
                 context = args[1];
                 break;
             default:
-                throw new Error("Event@unlisten(): unsupported arguments format.");
+                throw new Error("Unsupported arguments format.");
         }
+        console.log('old:', this.listeners);
         this.listeners = _.filter(this.listeners, (hConf: EventHandlerDescriptor<T>) => {
             let differentHandler: boolean = hConf.handler !== handler;
-            let noContextGiven: boolean = context === null;
-            let confHasNoContext: boolean = !!hConf.context;
+            let noHandlerGiven: boolean = !handler;
+            let noNameGiven: boolean = !name;
+            let noContextGiven: boolean = !context;
+            let confHasNoContext: boolean = !hConf.context;
             let differentContext: boolean = hConf.context !== context;
             let sameName = name && hConf.name && (name === hConf.name);
             let dontRemove: boolean;
@@ -287,19 +301,32 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
             if (idToRemove !== null) {
                 dontRemove = idToRemove !== hConf.id;
             } else {
-                if (name) {
-                    dontRemove = !sameName;
+                if (!noNameGiven) {
+                    dontRemove = name === hConf.name;;
                 } else {
-                    if (differentHandler) {
-                        dontRemove = true;
+                    if (noHandlerGiven) {
+                        if (noContextGiven) {
+                            throw new Error('Unexpected circumstances.')
+                        } else {
+                            dontRemove = confHasNoContext || (context !== hConf.context);
+                        }
                     } else {
-                        dontRemove = noContextGiven ? (!confHasNoContext) : (confHasNoContext || differentContext);
+                        if (differentHandler) {
+                            dontRemove = true;
+                        } else {
+                            if (noContextGiven) {
+                                dontRemove = (!confHasNoContext) || (differentHandler);
+                            } else {
+                                dontRemove = differentContext || differentHandler;
+                            }
+                        }
                     }
                 }
             }
-
+            console.log('dr:',dontRemove);
             return dontRemove;
         });
+        console.log('new:', this.listeners);
     }
 
     on(name: string, h: EventHandler<T>): number;
@@ -313,7 +340,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
     off(name: string): void;
     off(id: number): void;
     off(): void;
-    off(bullshitWTF?: EventHandler<T>|string|number, context?: Object): void {
+    off(something?: EventHandler<T>|string|number, context?: Object): void {
         return this.unlisten.apply(this, arguments);
     }
 
