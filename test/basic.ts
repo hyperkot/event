@@ -1,4 +1,4 @@
-import * as chai from 'chai';
+import * as chai from "chai";
 /// <reference path="../typings/index.d.ts"/>
 import {Event} from "../src/event";
 import * as deepStrictEqual from "deep-strict-equal";
@@ -31,7 +31,7 @@ describe("Core functionality: construction of event, triggering, listening", () 
         event.trigger();
         return event;
     });
-    it("correctly passes the agrgument to the event-handler", () => { 
+    it("correctly passes the agrgument to the event-handler", () => {
         let event = new Event<number>();
         const testArg = 4;
         event.on((n: number) => {
@@ -50,7 +50,7 @@ describe("Core functionality: construction of event, triggering, listening", () 
     it("doesn't trigger an unsubscribed handler", () => {
         let event = new Event<void>();
         let handler = () => {
-            throw new Error('Should not be invoked');
+            throw new Error("Should not be invoked");
         };
 
         event.on(handler);
@@ -61,7 +61,7 @@ describe("Core functionality: construction of event, triggering, listening", () 
     it("correctly unsubscribes by subscription-id", () => {
         let event = new Event<void>();
         let handler = () => {
-            throw new Error('Should not be invoked');
+            throw new Error("Should not be invoked");
         };
 
         let id = event.on(handler);
@@ -85,9 +85,9 @@ describe("Core functionality: construction of event, triggering, listening", () 
         event.listen(listener.fn, listener);
         event.trigger();
     });
-    it('correctly adds and removes named handlers', () => {
+    it("correctly adds and removes named handlers", () => {
         let event = new Event<void>();
-        const testName = 'test';
+        const testName = "test";
         let tCount = 0;
         let handler = () => {
             tCount++;
