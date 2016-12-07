@@ -20,7 +20,7 @@
         ],
         "quotemark": [
             false,
-            "double"
+            "avoid-escape"
         ],
         "semicolon": [
             true,
