@@ -1,4 +1,3 @@
-import * as http from 'http';
 /// <reference path="../typings/index.d.ts"/>
 
 import * as _ from "lodash";
@@ -30,7 +29,7 @@ import {
  * 
  * ToDo: I guess problems are to be expected in case of recursive arguments - check that out later. 
  */
-function submatch(subject: any, proto: any) {
+function submatch(subject: any, proto: any): boolean {
     switch (typeof proto) {
         case "undefined":
             return _.isUndefined(subject);
