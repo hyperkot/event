@@ -22,6 +22,39 @@ import {
 } from "./interfaces";
 
 /**
+ * This is a function for implementing "match" functionality. It works just like
+ * strict-deep-equals, expect the case when the second argument is an object. In this
+ * case all fields from the second argument must be in first one but the first may have
+ * other fields and it still will be a match. Each of the fields which are present on the
+ * second argument in its turn is matched recursively with the same 'submatch' function.
+ * 
+ * ToDo: I guess problems are to be expected in case of recursive arguments - check that out later. 
+ */
+function submatch(subject: any, proto: any) {
+    switch (typeof proto) {
+        case "undefined":
+            return _.isUndefined(subject);
+        case "null":
+            return _.isNull(subject);
+        case "number":
+        case "boolean":
+        case "string":
+        case "function":
+            return subject === proto;
+        case "object":
+            let isMatching = true;
+            if (typeof subject !== "object") return false;
+            if (!proto || !subject) return !subject && !proto;
+            for (let key in proto) {
+                isMatching = submatch(subject[key], proto[key]);
+            }
+            return isMatching;
+        default:
+            throw new Error(`Unexpected typeof: ${typeof proto}`);
+    }
+}
+
+/**
  * Represents an event and proviedes various way to observe the event both
  * externally and internally. Internally provides also a way to trigger the event.
  */
@@ -173,7 +206,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         this.listeners.slice().forEach((listener: EventHandlerDescriptor<T>) => {
             let doCall = true;
             if (listener.onlyMatching) {
-                doCall = deepEqual(listener.matchValue, eventArg);
+                doCall = submatch(eventArg, listener.matchValue);
             }
             if (doCall) {
                 if (listener.context) {
@@ -219,7 +252,13 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
         let id: number;
         if (typeof args[0] === "string") {
             let [name, handler, context] = args;
-            id = this.addListener({ name, handler, context, onlyMatching: true, matchValue: value });
+            id = this.addListener({
+                name,
+                handler,
+                context,
+                onlyMatching: true,
+                matchValue: value
+            });
         } else {
             let [handler, context] = args;
             id = this.addListener({ handler, context, onlyMatching: true, matchValue: value });
@@ -231,7 +270,13 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
      * Combines 'match' and 'once' features.
      */
     matchOnce(value: T, handler: EventHandler<T>, context: Object = null): number {
-         return this.addListener({ context, handler, once: true, onlyMatching: true, matchValue: value });
+         return this.addListener({
+             context,
+             handler,
+             once: true,
+             onlyMatching: true,
+             matchValue: value
+        });
     }
 
     /**
@@ -267,7 +312,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
                     context = null;
                 } else if (typeof args[0] === "number") {
                     idToRemove = args[0];
-                } else if (typeof args[0] === "function") { 
+                } else if (typeof args[0] === "function") {
                     name = null;
                     handler = args[0];
                     context = null;
@@ -287,7 +332,7 @@ export class Event<T> implements EventTrait<T>, Thenable<T> {
             default:
                 throw new Error("Unsupported arguments format.");
         }
-        
+
         this.listeners = _.filter(this.listeners, (hConf: EventHandlerDescriptor<T>) => {
             let differentHandler: boolean = hConf.handler !== handler;
             let noHandlerGiven: boolean = !handler;
