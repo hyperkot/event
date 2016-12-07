@@ -2,6 +2,9 @@
 
 _An alternative approach to implementing events._<br>
 
+This library provides an "Event" class which works similar to well-known
+EventEmitter from NodeJS 'events' module and DOM events. 
+
 This library was designed to be used with **TypeScript**, since IMHO classic 
 **EventEmitter** approach undermines benefits of strong typing - e.g.
 misspelling event name(which is a string literal) cannot be identified as an
@@ -43,12 +46,12 @@ excessive.
 - Describing each case is preferred to writing single unsiversal methods. This is a small lib
 with core functionality - starting from some point it shouldn't change much.
 So i can afford myself to write a long and hard-to-maintain code just to ensure that
-code analysis and instrumenting tools run in the most effective and effective way.
+code analysis and instrumenting tools run in the most effective way.
 It also helps to lower the complexity of code.
 - There was no comments initially. I added them only before making this repo public.
 I'm used to comment source with jsdocs when needed but not in case of TypeScript - it has
-more meta data described by it's syntax than jsdocs could support. So jsdocs here would be just
-excessive the only thing to expect from comments is descriptions.
+more meta data described by it's syntax than jsdocs could support. I think jsdocs here 
+would be just excessive. So comments provide only the general description of a class or method. 
 - Getters of context-bound variants of all methods imaginable as callbacks are provided.
 I just hate using bind and creating one-liner closures all over the place so much...)
 - Event may have only one argument. Any set of arguments may be presented as an object with
@@ -93,7 +96,7 @@ they all are subject to change.
         This feature certainly creates some overhead which I accept for now.
         And there is also a difference between 'once' and 'then' which you have to understand
         clearly to use this feature: you can attach listener with 'once' method then trigger the
-        event then attach it once again and trigger event again. In case of ;once' - first time the
+        event then attach it once again and trigger event again. In case of 'once' - first time the
         listener is triggered with first trigger argument and detached. Second time listener is
         attached again and invoked with second trigger argument. Promise-handlers are not detached.
         So if you attach a handler with 'then' second time after the event was triggered for the
@@ -124,7 +127,7 @@ to build from source and to work with source y will need several simple tools.
 Should be installed globally. Installs as any global node-modules: `npm i -g typings`. 
 On most linux platforms this will require either to use `sudo` or to grant yourself the rights
 to write in '/usr/lib/node_modules' or something like that - hopefully this is not your first
-global node-module and you already know how to deal with the issues of this kind.
+global node-module and you already know how to deal with issues of this kind.
 - **mocha** *(npm)* - used to run tests. The tests in this lib are written in the most straight,
 works-out-of-the-box way, so to run the tests you just enter `npm test` in the terminal
 or even just `mocha` as stated in the `package.json`.
@@ -138,11 +141,11 @@ any new files, which requires compilation to tsconfig yourself.
 - **nodemon** *(npm)* - this is not requirement, just a recomendation. I use it as a ci-automation
 tool when working on this library. One can setup this utility in such a way, that it will recompile
 source on any change(together with autosave in ide) and run tests(the only thing that can actually
-be run if you think of this lib as a standalone project). So just start it in the terminal,
+be run if you think of this lib as a standalone project). So just start it in the terminal then
 switch to ide and you will be able to observe how test results change as you write code.
 This is the way i prefer to work. Right now i start it with
 `nodemon -w . -x "tsc -p . && mocha" -d 1 -i "*.js" -e ts` command.
-And i have to restart it manually only after system restart, or something like that.
+And i have to restart it manually only after system restart or something like that.
 - **tslint** *(npm)* - this one is a recommendation too. I don't even run it myself - it is
 integrated into the ide i use, which is Visual Studio Code.
 - **gulp** *(npm)* - some tasks are implemented in gulp so this is a requirement in order to
@@ -155,6 +158,8 @@ so it simple to launch common tasks:
 something other than linux at all._</span> 
 - `npm start` - starts the workflow automation with _nodemon_,
     which is basically re-running build on source code changes and running tests afterwards.
+    I have to say it fails frequently on my machine right now - have to look into this 
+    issue later.
 - `npm test` - just run mocha, the source should be already built at this time.
 - `npm run build` - bundle the library into a single js file(`index.js`);
 - `gulp` - shorter than `npm run build`. Does the same thing. Note that build doesn't run tests.
