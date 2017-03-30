@@ -1,9 +1,9 @@
 # event-property
 
-_An alternative approach to implementing events._<br>
+_An alternative approach to implementing events._
 
 This library provides an "Event" class which works similar to well-known
-EventEmitter from NodeJS 'events' module and DOM events. 
+EventEmitter from NodeJS 'events' module and DOM events.
 
 This library was designed to be used with **TypeScript**, since IMHO classic 
 **EventEmitter** approach undermines benefits of strong typing - e.g.
@@ -13,7 +13,7 @@ of script - in classic(**EventEmitter**) approach that was just considered an an
 event. So classic events usually can't be analysed to provide intelligence for
 autocompletion and other usefull ide features.
 
-The main idea used to solve this and other issues of the classic approach was to present 
+The main idea used to solve this and other issues of the classic approach was to present
 each event as a separate object having its own `listen()` and `trigger()` methods.
 
 So if in a classic approach you have to either inherit EventEmitter class 
