@@ -4,7 +4,4 @@
 # obviously we don't want node_modules to be in the repo
 /node_modules
 
-# these are typesscript compilation products and temporary files
-/src/**/*.js
-/test/**/*.js
-index.js
+.idea
