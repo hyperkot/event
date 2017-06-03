@@ -2,12 +2,11 @@
   "name": "event-property",
   "version": "1.0.1",
   "description": "Alternative approach to implementing events concept. ",
-  "main": "index.js",
+  "main": "src/index.js",
+  "types": "lib/index",
   "scripts": {
-    "test": "tsc && mocha",
-    "start": "nodemon -w . -x \"tsfind && tsc -p . && mocha\" -d 1 -i \"*.js\" -e ts",
-    "build": "gulp",
-    "lint": "tslint --project ."
+    "test": "echo Tests are disabled",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,7 +17,8 @@
     "events",
     "event-emitter",
     "listener",
-    "radio"
+    "radio",
+    "typescript"
   ],
   "author": "hyperkot",
   "license": "MIT",
