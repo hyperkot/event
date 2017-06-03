@@ -1,19 +1,10 @@
 {
-  "name": "event",
-  "dependencies": {},
+  "name": "event-property",
+  "dependencies": {
+    "chai": "registry:npm/chai#3.5.0+20160723033700",
+    "lodash": "registry:npm/lodash#4.0.0+20161015015725"
+  },
   "globalDependencies": {
-    "browserify": "registry:dt/browserify#12.0.1+20160317120654",
-    "chai": "registry:dt/chai#3.4.0+20160601211834",
-    "deep-equal": "registry:dt/deep-equal#0.0.0+20160316155526",
-    "gulp": "registry:dt/gulp#3.8.0+20160907112908",
-    "gulp-typescript": "registry:dt/gulp-typescript#0.0.0+20160317120654",
-    "lodash": "registry:dt/lodash#4.14.0+20161110215204",
-    "merge2": "registry:dt/merge2#0.3.6+20160316155526",
-    "mocha": "registry:dt/mocha#2.2.5+20161028141524",
-    "node": "registry:dt/node#6.0.0+20161121110008",
-    "orchestrator": "registry:dt/orchestrator#0.0.0+20160316155526",
-    "q": "registry:dt/q#0.0.0+20161004185634",
-    "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526",
-    "vinyl": "registry:dt/vinyl#1.2.0+20160924121322"
+    "mocha": "registry:dt/mocha#2.2.5+20170311011848"
   }
 }

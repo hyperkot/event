@@ -6,33 +6,22 @@
     "noImplicitUseStrict": true,
     "preserveConstEnums": true,
     "removeComments": false,
-    "target": "es6",
+    "declaration": true,
+    "target": "es2017",
     "sourceMap": false,
     "inlineSourceMap": true,
     "inlineSources": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "listFiles": false,
     "listEmittedFiles": true,
-    "declaration": false
+    "outDir": "lib"
   },
-  "filesGlob": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "!**/*.d.ts"
-  ],
   "files": [
-    "src/event.ts",
-    "src/index.ts",
-    "src/interfaces.ts",
-    "test/basic.ts",
-    "test/mixin.ts"
-  ],
-  "atom": {
-    "rewriteTsconfig": false
-  }
+    "src/index.ts"
+  ]
 }
