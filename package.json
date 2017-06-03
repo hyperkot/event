@@ -5,8 +5,10 @@
   "main": "src/index.js",
   "types": "lib/index",
   "scripts": {
-    "test": "echo Tests are disabled",
-    "build": "tsc"
+    "test": "npm run build && mocha lib/test/*.js",
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf lib",
+    "start": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -21,7 +21,7 @@
     "listEmittedFiles": true,
     "outDir": "lib"
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "src/**/*.ts"
   ]
 }
