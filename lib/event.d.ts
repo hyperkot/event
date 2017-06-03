@@ -20,7 +20,7 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * but if the event is not of a void type - you should always pass an argument to
      * the emit method.
      */
-    emit(eventArg?: T): void;
+    emit(eventArg: T): void;
     /**
      * Adds a listener. If once=true then adds once listener which means that listener will be removed,
      * when event triggers for the first time. Also if event already was triggered for the first time
@@ -152,10 +152,11 @@ export declare namespace EventProperty {
         next(): Promise<T>;
     }
     function make<T>(): [EventProperty<T>, EventProperty.Emitter<T>];
+    function split<T>(): [(arg: T) => void, EventProperty.Emitter<T>];
+    function splitVoid(): [() => void, EventProperty.Emitter<void>];
+    class Void extends EventProperty<void> {
+        constructor();
+        emit(): void;
+    }
 }
-export declare type VoidEvent = EventProperty<void>;
-export declare type NumberEvent = EventProperty<number>;
-export declare type StringEvent = EventProperty<string>;
-export declare type ObjectEvent = EventProperty<Object>;
-export declare type AnyEvent = EventProperty<any>;
 export default EventProperty;

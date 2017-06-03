@@ -12,7 +12,7 @@ function testTriggers(method: string) {
         expect(typeof id).to.equal("number");
     });
     it("triggers", (done: MochaDone) => {
-        let event = new EventProperty<void>();
+        let event = new EventProperty.Void();
         event[method](done);
         event.emit();
     });
@@ -26,7 +26,7 @@ function testTriggers(method: string) {
         event.emit(testArg);
     });
     it("passes context", (done: MochaDone) => {
-        let event = new EventProperty<void>();
+        let event = new EventProperty.Void();
         let listener: {
             itIsListener: boolean;
             fn: () => void;
@@ -83,7 +83,7 @@ function testMatchTriggers(method: string) {
     it("ignores irrelevant emits", () => {
         let event = new EventProperty<string>();
         event[method](match, function () { throw new Error("Must not be invoked"); });
-        event.emit();
+        event.emit("");
         event.emit("abc");
         event.emit(null);
     });
@@ -96,7 +96,7 @@ describe("EventProperty", () => {
     describe("on", () => {
         testTriggers("on");
         it("invokes all listeners", (done: MochaDone) => {
-            let event = new EventProperty<string>();
+            let event = new EventProperty.Void();
             let resolve1: () => void = null;
             let resolve2: () => void = null;
             let promise1: Promise<any> = new Promise<any>((resolve) => { resolve1 = resolve; });
@@ -107,7 +107,7 @@ describe("EventProperty", () => {
             event.emit();
         });
         it("invokes listeners on each emit", (done: MochaDone) => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let nExpected = 5;
             let nRegistered = 0;
             event.on(() => {
@@ -120,7 +120,7 @@ describe("EventProperty", () => {
 
     describe("off", () => {
         it("by handler", () => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let handler = () => {
                 throw new Error("Should not be invoked");
             };
@@ -131,7 +131,7 @@ describe("EventProperty", () => {
             event.emit();
         });
         it("by id", () => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let handler = () => {
                 throw new Error("Should not be invoked");
             };
@@ -142,7 +142,7 @@ describe("EventProperty", () => {
             event.emit();
         });
         it("by context", (done: MochaDone) => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let context = {};
             let handler = function() {
                 if (this === context)
@@ -161,7 +161,7 @@ describe("EventProperty", () => {
             event.emit();
         });
         it("clears", (done: MochaDone) => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let handler = function() {
                 if (this === context)
                     throw new Error("Should not be invoked");
@@ -182,7 +182,7 @@ describe("EventProperty", () => {
     describe("once", () => {
         testTriggers("once");
         it("triggers once", () => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             let isFirst = true;
             event.once(function () {
                 chai.assert(isFirst);
@@ -238,8 +238,8 @@ describe("EventProperty", () => {
             eventFrom.emit(testArg);
         });
         it("offs with id", () => {
-            let eventFrom = new EventProperty<void>();
-            let eventTo = new EventProperty<void>();
+            let eventFrom = new EventProperty.Void();
+            let eventTo = new EventProperty.Void();
 
             eventTo.on(function () { throw new Error("Should not happen"); });
             let id = eventFrom.pipe(eventTo);
@@ -247,8 +247,8 @@ describe("EventProperty", () => {
             eventFrom.emit();
         });
         it("offs with event", () => {
-            let eventFrom = new EventProperty<void>();
-            let eventTo = new EventProperty<void>();
+            let eventFrom = new EventProperty.Void();
+            let eventTo = new EventProperty.Void();
 
             eventTo.on(function () { throw new Error("Should not happen"); });
             eventFrom.pipe(eventTo);
@@ -298,7 +298,7 @@ describe("EventProperty", () => {
         });
 
         it("can be caught after emit", (done: MochaDone) => {
-            let event = new EventProperty<void>();
+            let event = new EventProperty.Void();
             event.emit();
             event.first().then(() => {
                 done();
@@ -336,17 +336,17 @@ describe("EventProperty", () => {
     });
     it("EventProperty.make", (done: MochaDone) => {
         class Test {
-            private event: EventProperty<void>;
-            public emitter: EventProperty.Emitter<void>;
+            private event: EventProperty<string>;
+            public emitter: EventProperty.Emitter<string>;
             constructor() {
-                [this.event, this.emitter] = EventProperty.make<void>();
+                [this.event, this.emitter] = EventProperty.make<string>();
             }
             test() {
-                this.event.emit();
+                this.event.emit("test");
             }
         }
         let instance = new Test();
-        instance.emitter.on(done);
+        instance.emitter.on(() => done());
         instance.test();
     });
 });

@@ -77,7 +77,7 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
      * but if the event is not of a void type - you should always pass an argument to
      * the emit method.
      */
-    emit(eventArg?: T): void {
+    emit(eventArg: T): void {
         let resolveFirstTimeTrigger: boolean = false;
         let toInvoke: EventProperty.HandlerDescriptor<T>[];
 
@@ -378,12 +378,25 @@ export namespace EventProperty {
         let emitter = <EventProperty.Emitter<T>>eventProp;
         return [eventProp, emitter];
     }
-}
 
-export type VoidEvent = EventProperty<void>;
-export type NumberEvent = EventProperty<number>;
-export type StringEvent = EventProperty<string>;
-export type ObjectEvent = EventProperty<Object>;
-export type AnyEvent = EventProperty<any>;
+    export function split<T>(): [(arg: T) => void, EventProperty.Emitter<T>] {
+        let eventProp = new EventProperty<T>();
+        let emitter = <EventProperty.Emitter<T>>eventProp;
+        return [eventProp.emit, emitter];
+    }
+
+    export function splitVoid(): [() => void, EventProperty.Emitter<void>] {
+        let eventProp = new EventProperty.Void();
+        let emitter = <EventProperty.Emitter<void>>eventProp;
+        return [eventProp.emit, emitter];
+    }
+
+    export class Void extends EventProperty<void> {
+        constructor() {
+            super();
+        }
+        emit() { return super.emit(void 0); }
+    };
+}
 
 export default EventProperty;
