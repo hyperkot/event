@@ -36,7 +36,7 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * Adds a listener, which will be invoked only if the event-argument is deeply-equal to
      * the given value.
      */
-    match(value: T, handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
+    match(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
     /**
      * Combines 'match' and 'once' features.
      */
@@ -64,7 +64,7 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * @param destination
      * @returns {EventProperty.ListenerId}
      */
-    route(value: T, other: EventProperty<T>): EventProperty.ListenerId;
+    route(value: T | RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
     private removeListener(listener);
     private addListener(options);
 }
@@ -106,7 +106,7 @@ export declare namespace EventProperty {
          * The value, to be matched if the 'onlyMatching' flag is set.
          * @type {[type]}
          */
-        matchValue?: T;
+        matchValue?: T | RegExp;
     }
     /**
      * This is the object which represents an existing handler internally in Event object.

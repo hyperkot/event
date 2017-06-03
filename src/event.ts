@@ -253,7 +253,7 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
      * @returns {EventProperty.ListenerId}
      */
     route(value: T|RegExp, destination: EventProperty<T>): EventProperty.ListenerId {
-        return this.match(value, other.emit);
+        return this.match(value, destination.emit);
     }
 
     private removeListener(listener: EventProperty.HandlerDescriptor<T>): void {
