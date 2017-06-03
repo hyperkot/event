@@ -279,7 +279,7 @@ describe("EventProperty", () => {
                 chai.assert(/^\/[a-zA-Z]*/.test(arg));
                 chai.assert(!--pass)
             });
-            let id = eventFrom.route(/^\/[a-zA-Z]*/, eventTo);
+            let id = eventFrom.route(/^\/[a-zA-Z]+/, eventTo);
             expect(typeof id).to.equal("number");
             eventFrom.emit("/root");
             eventFrom.emit("random");
