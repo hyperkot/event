@@ -5,7 +5,7 @@ import Beacon from "./beacon";
 
 export {
     Beacon as Beacon,
-    EventProperty as EventProperty;
+    EventProperty as EventProperty
 }
 
 export default EventProperty;
