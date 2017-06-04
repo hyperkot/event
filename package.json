@@ -8,7 +8,7 @@
     "test": "npm run build && mocha lib/test/*.js",
     "build": "npm run clean && tsc",
     "release": "npm run build && npm run gendocs",
-    "gendocs" : "rm -rf docs && jsdoc lib/event.js --destination docs",
+    "gendocs" : "rm -rf docs/* && jsdoc2md lib/event.js > docs/event.md",
     "clean": "rm -rf lib",
     "start": "npm run build"
   },

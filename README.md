@@ -90,7 +90,7 @@ _This library implements several additional features I deemed useful for my purp
 
 ### API
 
-_[See generated documentation](docs/index.html)_
+_[See generated documentation](docs/event.md)_
 ```typescript
 interface EventProperty<T> {
     on(handler: EventProperty.Handler<T>, context?: Object): ListenerId;
