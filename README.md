@@ -126,6 +126,9 @@ interface EventProperty.Void extends EventProperty<void> {
 
 
 ### Examples
+Look for more examples in [tests](src/test/event.ts)
+
+##### _Limiting access to `emit` in a class_
 ```typescript
     import EventProperty from 'event-property';
 
@@ -147,6 +150,10 @@ interface EventProperty.Void extends EventProperty<void> {
     });
 ```
 
+
+
+##### _Using initialization event_
+
 ```typescript
     import EventProperty from 'event-property';
 
@@ -162,6 +169,7 @@ interface EventProperty.Void extends EventProperty<void> {
     }, Math.floor(Math.random() * 10000));
 ```
 
+##### _Using `match` to handle a certain key_
 ```typescript
     import EventProperty from 'event-property';
 

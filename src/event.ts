@@ -562,6 +562,9 @@ export namespace EventProperty {
      * They both actually represent the same EventProperty object.
      *
      * returns {[EventProperty,EventProperty.Emitter<T>]}
+     *
+     * @method EventProperty.make
+     * @static
      */
     export function make<T>(): [EventProperty<T>, EventProperty.Emitter<T>] {
         let eventProp = new EventProperty<T>();
@@ -574,6 +577,9 @@ export namespace EventProperty {
      * to add and remove listeners of that event.
      *
      * returns {[EventProperty.EmitMethod<T>,EventProperty.Emitter<T>]}
+     *
+     * @method EventProperty.split
+     * @static
      */
     export function split<T>(): [EventProperty.EmitMethod<T>, EventProperty.Emitter<T>] {
         let eventProp = new EventProperty<T>();
@@ -585,6 +591,9 @@ export namespace EventProperty {
      * Emitter-interface. Special version for void-typed events.
      *
      * returns {[EventProperty.VoidEmitMethod,EventProperty.Emitter<T>]}
+     *
+     * @method EventProperty.splitVoid
+     * @static
      */
     export function splitVoid(): [EventProperty.VoidEmitMethod, EventProperty.Emitter<void>] {
         let eventProp = new EventProperty.Void();
@@ -594,18 +603,20 @@ export namespace EventProperty {
 
     /**
      * Special subclass of EventProperty for void type - allows calling emit without arguments.
+     * Extends {@link EventProperty}
      *
-     * @extends {EventProperty}
+     * @class EventProperty.Void
+     * @static
+     * @see {EventProperty}
      */
     export class Void extends EventProperty<void> {
-        constructor() {
-            super();
-        }
+        constructor() { super(); }
 
         /**
          * Emits an event invoking all listeners.
          *
-         * @see {EventProperty.emit}
+         * @method EventProperty.Void#emit
+         * @see {EventProperty#emit}
          */
         emit() { return super.emit(void 0); }
     }

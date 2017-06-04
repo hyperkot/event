@@ -5,96 +5,13 @@ import {EventProperty} from "../event";
 import {assert} from "~chai/lib/Chai";
 let expect = chai.expect;
 
-function testTriggers(method: string) {
-    it("returns listenerId", () => {
-        let event = new EventProperty<void>();
-        let id = event[method](() => {});
-        expect(typeof id).to.equal("number");
-    });
-    it("triggers", (done: MochaDone) => {
-        let event = new EventProperty.Void();
-        event[method](done);
-        event.emit();
-    });
-    it("passes argument", (done: MochaDone) => {
-        let testArg = "test";
-        let event = new EventProperty<string>();
-        event[method]((arg: string) => {
-            expect(arg).to.be.equal(testArg);
-            done();
-        });
-        event.emit(testArg);
-    });
-    it("passes context", (done: MochaDone) => {
-        let event = new EventProperty.Void();
-        let listener: {
-            itIsListener: boolean;
-            fn: () => void;
-        };
-        listener  = {
-            itIsListener: true,
-            fn() {
-                chai.expect(this).to.be.equal(listener);
-                done();
-            }
-        };
-        event[method](listener.fn, listener);
-        event.emit();
-    });
-}
-
-function testMatchTriggers(method: string) {
-    let match = "testMatchValue";
-    it("returns listenerId", () => {
-        let event = new EventProperty<string>();
-        let id = event[method](match, () => {});
-        expect(typeof id).to.equal("number");
-    });
-    it("triggers", (done: MochaDone) => {
-        let event = new EventProperty<string>();
-        event[method](match, function () { done(); });
-        event.emit(match);
-    });
-    it("passes argument", (done: MochaDone) => {
-        let testArg = "test";
-        let event = new EventProperty<string>();
-        event[method](testArg, (arg: string) => {
-            expect(arg).to.be.equal(testArg);
-            done();
-        });
-        event.emit(testArg);
-    });
-    it("passes context", (done: MochaDone) => {
-        let event = new EventProperty<string>();
-        let listener: {
-            itIsListener: boolean;
-            fn: () => void;
-        };
-        listener  = {
-            itIsListener: true,
-            fn() {
-                chai.expect(this).to.be.equal(listener);
-                done();
-            }
-        };
-        event[method](match, listener.fn, listener);
-        event.emit(match);
-    });
-    it("ignores irrelevant emits", () => {
-        let event = new EventProperty<string>();
-        event[method](match, function () { throw new Error("Must not be invoked"); });
-        event.emit("");
-        event.emit("abc");
-        event.emit(null);
-    });
-}
-
 describe("EventProperty", () => {
     it("constructor", () => {
         new EventProperty<void>();
     });
     describe("on", () => {
         testTriggers("on");
+
         it("invokes all listeners", (done: MochaDone) => {
             let event = new EventProperty.Void();
             let resolve1: () => void = null;
@@ -181,6 +98,7 @@ describe("EventProperty", () => {
 
     describe("once", () => {
         testTriggers("once");
+
         it("triggers once", () => {
             let event = new EventProperty.Void();
             let isFirst = true;
@@ -194,6 +112,7 @@ describe("EventProperty", () => {
     });
     describe("match", () => {
         testMatchTriggers("match");
+
         it("matches object part", (done: MochaDone) => {
             let event = new EventProperty<any>();
             event.match({ a: 1, b: 2 }, function () { done(); });
@@ -212,6 +131,7 @@ describe("EventProperty", () => {
     });
     describe("matchOnce", () => {
         testMatchTriggers("matchOnce");
+
         it("matches once", () => {
             let event = new EventProperty<string>();
             let isFirst = true;
@@ -350,3 +270,88 @@ describe("EventProperty", () => {
         instance.test();
     });
 });
+
+
+function testTriggers(method: string) {
+    it("returns listenerId", () => {
+        let event = new EventProperty<void>();
+        let id = event[method](() => {});
+        expect(typeof id).to.equal("number");
+    });
+    it("triggers", (done: MochaDone) => {
+        let event = new EventProperty.Void();
+        event[method](done);
+        event.emit();
+    });
+    it("passes argument", (done: MochaDone) => {
+        let testArg = "test";
+        let event = new EventProperty<string>();
+        event[method]((arg: string) => {
+            expect(arg).to.be.equal(testArg);
+            done();
+        });
+        event.emit(testArg);
+    });
+    it("passes context", (done: MochaDone) => {
+        let event = new EventProperty.Void();
+        let listener: {
+            itIsListener: boolean;
+            fn: () => void;
+        };
+        listener  = {
+            itIsListener: true,
+            fn() {
+                chai.expect(this).to.be.equal(listener);
+                done();
+            }
+        };
+        event[method](listener.fn, listener);
+        event.emit();
+    });
+}
+
+function testMatchTriggers(method: string) {
+    let match = "testMatchValue";
+    it("returns listenerId", () => {
+        let event = new EventProperty<string>();
+        let id = event[method](match, () => {});
+        expect(typeof id).to.equal("number");
+    });
+    it("triggers", (done: MochaDone) => {
+        let event = new EventProperty<string>();
+        event[method](match, function () { done(); });
+        event.emit(match);
+    });
+    it("passes argument", (done: MochaDone) => {
+        let testArg = "test";
+        let event = new EventProperty<string>();
+        event[method](testArg, (arg: string) => {
+            expect(arg).to.be.equal(testArg);
+            done();
+        });
+        event.emit(testArg);
+    });
+    it("passes context", (done: MochaDone) => {
+        let event = new EventProperty<string>();
+        let listener: {
+            itIsListener: boolean;
+            fn: () => void;
+        };
+        listener  = {
+            itIsListener: true,
+            fn() {
+                chai.expect(this).to.be.equal(listener);
+                done();
+            }
+        };
+        event[method](match, listener.fn, listener);
+        event.emit(match);
+    });
+    it("ignores irrelevant emits", () => {
+        let event = new EventProperty<string>();
+        event[method](match, function () { throw new Error("Must not be invoked"); });
+        event.emit("");
+        event.emit("abc");
+        event.emit(null);
+    });
+}
