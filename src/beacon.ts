@@ -3,10 +3,12 @@
 import Event from "./event";
 
 /**
- * Represents a model of a single property of type T.
+ * Represents a model of a single property of type T. A basic element for constructing models.
  * - Property can be retrieved/changed by using the .value property of the beacon.
- * - Setting new value to the property will trigger the 'changed' event
- *
+ * - Setting new value will trigger the 'changed' event.
+ * - Setting the same value will be ignored and won't trigger the 'changed' event.
+ * - Can sync to another beacon. Whenever the value of one of the synced beacons changes
+ *      the value of the other is changed accordingly.
  */
 export class Beacon<T> {
 
@@ -30,7 +32,7 @@ export class Beacon<T> {
     get isAssigned(): boolean { return this._isAssigned; }
 
     constructor(value?: T) {
-        this.changed.first.then(() => {this._isAssigned = true;});
+        this.changed.first.then(() => this._isAssigned = true);
         if (arguments.length === 1) this.value = value;
     }
 
@@ -61,4 +63,4 @@ export class Beacon<T> {
     }
 }
 
-export default Beacon;let λ = 1;
+export default Beacon;
