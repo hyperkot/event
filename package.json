@@ -1,6 +1,6 @@
 {
   "name": "event-property",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Alternative approach to implementing events concept. ",
   "main": "src/index.js",
   "types": "lib/index",
