@@ -52,7 +52,7 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     off(destination: EventProperty<T>): void;
     off(): void;
     next(): Promise<T | void>;
-    first(): Promise<T | void>;
+    readonly first: Promise<T | void>;
     /**
      * Piping the events means that the other event must be triggered(happen) any time
      * this event happens and with exactly the same argument.
@@ -129,12 +129,12 @@ export declare namespace EventProperty {
          * with value, which is exactly(===) the same as the one you pass to the match
          * method as first argument
          */
-        match(value: T, h: EventProperty.Handler<T>, context?: Object): ListenerId;
+        match(value: T | RegExp, h: EventProperty.Handler<T>, context?: Object): ListenerId;
         /**
          * Adds an event handler.
          * Combines the 'once' and the 'match' behaviours.
          */
-        matchOnce(value: T, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
+        matchOnce(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
         /**
          * An alias for unlisten
          */
@@ -148,7 +148,8 @@ export declare namespace EventProperty {
          * second one is triggered automatically with exactly the same argument
          */
         pipe(destination: EventProperty.Emitter<T>): ListenerId;
-        first(): Promise<T>;
+        route(value: T | RegExp, destination: EventProperty.Emitter<T>): ListenerId;
+        first: Promise<T>;
         next(): Promise<T>;
     }
     function make<T>(): [EventProperty<T>, EventProperty.Emitter<T>];

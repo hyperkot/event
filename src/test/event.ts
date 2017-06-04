@@ -277,7 +277,7 @@ describe("EventProperty", () => {
 
             eventTo.on(function (arg: string) {
                 chai.assert(/^\/[a-zA-Z]*/.test(arg));
-                chai.assert(!--pass)
+                chai.assert(!--pass);
             });
             let id = eventFrom.route(/^\/[a-zA-Z]+/, eventTo);
             expect(typeof id).to.equal("number");
@@ -290,7 +290,7 @@ describe("EventProperty", () => {
         it("resolves with value", (done: MochaDone) => {
             let event = new EventProperty<string>();
             let testArg: string = "test";
-            event.first().then((arg: string) => {
+            event.first.then((arg: string) => {
                 expect(arg).to.equal(testArg);
                 done();
             });
@@ -300,7 +300,7 @@ describe("EventProperty", () => {
         it("can be caught after emit", (done: MochaDone) => {
             let event = new EventProperty.Void();
             event.emit();
-            event.first().then(() => {
+            event.first.then(() => {
                 done();
             });
         });

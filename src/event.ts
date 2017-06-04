@@ -234,7 +234,7 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
         });
     }
 
-    first(): Promise<T|void> {
+    get first(): Promise<T|void> {
         return this.firstTriggerPromise;
     }
 
@@ -346,13 +346,13 @@ export namespace EventProperty {
          * with value, which is exactly(===) the same as the one you pass to the match
          * method as first argument
          */
-        match(value: T, h: EventProperty.Handler<T>, context?: Object): ListenerId;
+        match(value: T|RegExp, h: EventProperty.Handler<T>, context?: Object): ListenerId;
 
         /**
          * Adds an event handler.
          * Combines the 'once' and the 'match' behaviours.
          */
-        matchOnce(value: T, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
+        matchOnce(value: T|RegExp, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
 
         /**
          * An alias for unlisten
@@ -368,8 +368,9 @@ export namespace EventProperty {
          * second one is triggered automatically with exactly the same argument
          */
         pipe(destination: EventProperty.Emitter<T>): ListenerId;
+        route(value: T|RegExp, destination: EventProperty.Emitter<T>): ListenerId;
 
-        first(): Promise<T>;
+        first: Promise<T>;
         next(): Promise<T>;
     }
 
