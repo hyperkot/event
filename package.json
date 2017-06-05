@@ -2,8 +2,8 @@
   "name": "event-property",
   "version": "1.2.1",
   "description": "Alternative approach to implementing events concept. ",
-  "main": "src/index.js",
-  "types": "lib/index",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "npm run build && mocha lib/test/*.js",
     "test-beacon": "npm run build && mocha lib/test/beacon.js",
@@ -34,6 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "latest",
+    "jspm": "^0.16.53",
     "mocha": "latest",
     "typescript": "^2.3.4"
   }
