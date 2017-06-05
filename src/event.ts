@@ -7,20 +7,14 @@
 export class EventProperty<T> implements EventProperty.Emitter<T> {
     private listeners: EventProperty.HandlerDescriptor<T>[] = [];
 
-    private firstTriggerPromise: Promise<T> = null;
-    private resolveFirstTriggerPromise: (value: T) => any;
-    private rejectFirstTriggerPromise: (value: any) => any;
-    private isFirstTriggerDone: boolean = false;
+    private initArg: T;
+    private initHandlers: [EventProperty.Handler<T>, Object][] = [];
+    get isInitialized(): boolean { return this.initHandlers === null; }
 
     private idCounter: EventProperty.ListenerId = 0;
 
 
     constructor() {
-
-        this.firstTriggerPromise = new Promise((resolve: (value: T) => void, reject: (e: any) => void) => {
-            this.resolveFirstTriggerPromise = resolve;
-            this.rejectFirstTriggerPromise = reject;
-        });
 
         this.emit = this.emit.bind(this);
     }
@@ -41,30 +35,26 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
         let resolveFirstTimeTrigger: boolean = false;
         let toInvoke: EventProperty.HandlerDescriptor<T>[];
 
-        if (!this.isFirstTriggerDone) {
-            this.isFirstTriggerDone = true;
-            resolveFirstTimeTrigger = true;
+        if (!this.isInitialized) {
+            let initHandlers = this.initHandlers;
+            this.initHandlers = null;
+            this.initArg = eventArg;
+            initHandlers.forEach(([handler, context]: [EventProperty.Handler<T>, Object]) => {
+                handler.call(context || null, this.initArg);
+            });
         }
 
         toInvoke = this.listeners.slice().filter((listener: EventProperty.HandlerDescriptor<T>) => {
             let shouldInvoke = !listener.onlyMatching || objectMatch(eventArg, listener.matchValue);
-            if (listener.once) {
+            if (listener.once && shouldInvoke) {
                 this.removeListener(listener);
             }
             return shouldInvoke;
         });
 
-        toInvoke.forEach((listener: EventProperty.HandlerDescriptor<T>) => {
-            if (listener.context) {
-                listener.handler.call(listener.context, eventArg);
-            } else {
-                listener.handler.call(null, eventArg);
-            }
+        toInvoke.forEach(({handler, context}: {handler: EventProperty.Handler<T>, context?: Object}) => {
+            handler.call(context || null, eventArg);
         });
-
-        if (resolveFirstTimeTrigger) {
-            this.resolveFirstTriggerPromise(eventArg);
-        }
     }
 
     /**
@@ -170,30 +160,19 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
     }
 
     /**
-     * Returns a promise which is resolved next time this event is emitted.
-     * Works as a promisified version of 'once'.
+     * Adds an initialization handler. Initialization handlers are invoked during the very first
+     * emit of event in this EventProperty. If first emit already occurred then the handler is
+     * invoked immediately.
      *
-     * @returns {Promise<T>}
-     *
-     * @see EventProperty.once
+     * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
+     * @param {Object} [context] - handler will be invoked in this context
      */
-    next(): Promise<T> {
-        return new Promise((resolve: (a: T) => void, reject: (e: any) => void) => {
-            try {
-                this.once(resolve);
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-
-    /**
-     * Stores promise which is resolved when this event is emitted for the first time.
-     *
-     * @returns {Promise<T>}
-     */
-    get first(): Promise<T> {
-        return this.firstTriggerPromise;
+    init(handler: EventProperty.Handler<T>, context?: Object) {
+        if (this.isInitialized) {
+            handler.call(context || null, this.initArg);
+        } else {
+            this.initHandlers.push([handler, context || null]);
+        }
     }
 
     /**
@@ -499,18 +478,14 @@ export namespace EventProperty {
         route(matchValue: T|RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
 
         /**
-         * Returns a promise which is resolved next time this event is emitted.
+         * Adds an initialization handler. Initialization handlers are invoked during the very first
+         * emit of event in this EventProperty. If first emit already occurred then the handler is
+         * invoked immediately.
          *
-         * @returns {Promise<T>}
+         * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
+         * @param {Object} [context] - handler will be invoked in this context
          */
-        next(): Promise<T>;
-
-        /**
-         * Stores promise which is resolved when this event is emitted for the first time.
-         *
-         * @type {Promise<T>}
-         */
-        first: Promise<T>;
+        init(handler: EventProperty.Handler<T>, context?: Object): void;
 
         /**
          * Removes all listeners that were attached with given handler and without a context.

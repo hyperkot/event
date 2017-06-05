@@ -5,10 +5,9 @@
  */
 export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     private listeners;
-    private firstTriggerPromise;
-    private resolveFirstTriggerPromise;
-    private rejectFirstTriggerPromise;
-    private isFirstTriggerDone;
+    private initArg;
+    private initHandlers;
+    readonly isInitialized: boolean;
     private idCounter;
     constructor();
     /**
@@ -102,20 +101,14 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      */
     route(matchValue: T | RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
     /**
-     * Returns a promise which is resolved next time this event is emitted.
-     * Works as a promisified version of 'once'.
+     * Adds an initialization handler. Initialization handlers are invoked during the very first
+     * emit of event in this EventProperty. If first emit already occurred then the handler is
+     * invoked immediately.
      *
-     * @returns {Promise<T>}
-     *
-     * @see EventProperty.once
+     * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
+     * @param {Object} [context] - handler will be invoked in this context
      */
-    next(): Promise<T>;
-    /**
-     * Stores promise which is resolved when this event is emitted for the first time.
-     *
-     * @returns {Promise<T>}
-     */
-    readonly first: Promise<T>;
+    init(handler: EventProperty.Handler<T>, context?: Object): void;
     /**
      * Removes all listeners that were attached with given handler and without a context.
      * Note: it will never remove any listener that was attached with a context.
@@ -314,17 +307,14 @@ export declare namespace EventProperty {
          */
         route(matchValue: T | RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
         /**
-         * Returns a promise which is resolved next time this event is emitted.
+         * Adds an initialization handler. Initialization handlers are invoked during the very first
+         * emit of event in this EventProperty. If first emit already occurred then the handler is
+         * invoked immediately.
          *
-         * @returns {Promise<T>}
+         * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
+         * @param {Object} [context] - handler will be invoked in this context
          */
-        next(): Promise<T>;
-        /**
-         * Stores promise which is resolved when this event is emitted for the first time.
-         *
-         * @type {Promise<T>}
-         */
-        first: Promise<T>;
+        init(handler: EventProperty.Handler<T>, context?: Object): void;
         /**
          * Removes all listeners that were attached with given handler and without a context.
          * Note: it will never remove any listener that was attached with a context.

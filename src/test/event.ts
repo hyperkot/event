@@ -9,7 +9,7 @@ describe("EventProperty", () => {
     it("constructor", () => {
         new EventProperty<void>();
     });
-    describe("on", () => {
+    describe(".on()", () => {
         testTriggers("on");
 
         it("invokes all listeners", (done: MochaDone) => {
@@ -35,7 +35,7 @@ describe("EventProperty", () => {
         });
     });
 
-    describe("off", () => {
+    describe(".off()", () => {
         it("by handler", () => {
             let event = new EventProperty.Void();
             let handler = () => {
@@ -96,7 +96,7 @@ describe("EventProperty", () => {
         });
     });
 
-    describe("once", () => {
+    describe(".once()", () => {
         testTriggers("once");
 
         it("triggers once", () => {
@@ -110,7 +110,7 @@ describe("EventProperty", () => {
             event.emit();
         });
     });
-    describe("match", () => {
+    describe(".match()", () => {
         testMatchTriggers("match");
 
         it("matches object part", (done: MochaDone) => {
@@ -129,7 +129,7 @@ describe("EventProperty", () => {
             event.emit("test-test2xs");
         });
     });
-    describe("matchOnce", () => {
+    describe(".matchOnce()", () => {
         testMatchTriggers("matchOnce");
 
         it("matches once", () => {
@@ -144,7 +144,7 @@ describe("EventProperty", () => {
             event.emit("unmatch");
         });
     });
-    describe("pipe", () => {
+    describe(".pipe()", () => {
         it("passes argument, get listenerId", (done: MochaDone) => {
             let eventFrom = new EventProperty<string>();
             let eventTo = new EventProperty<string>();
@@ -176,7 +176,7 @@ describe("EventProperty", () => {
             eventFrom.emit();
         });
     });
-    describe("route", () => {
+    describe(".route()", () => {
         it("string", () => {
             let eventFrom = new EventProperty<string>();
             let eventTo = new EventProperty<string>();
@@ -206,11 +206,11 @@ describe("EventProperty", () => {
             eventFrom.emit("/34/");
         });
     });
-    describe("first", () => {
+    describe(".init()", () => {
         it("resolves with value", (done: MochaDone) => {
             let event = new EventProperty<string>();
             let testArg: string = "test";
-            event.first.then((arg: string) => {
+            event.init((arg: string) => {
                 expect(arg).to.equal(testArg);
                 done();
             });
@@ -220,54 +220,70 @@ describe("EventProperty", () => {
         it("can be caught after emit", (done: MochaDone) => {
             let event = new EventProperty.Void();
             event.emit();
-            event.first.then(() => {
+            event.init(() => {
                 done();
             });
         });
-    });
-    describe("next", () => {
-        it("resolves with value", (done: MochaDone) => {
-            let event = new EventProperty<string>();
-            let testArg: string = "test";
-            event.next().then((arg: string) => {
-                expect(arg).to.equal(testArg);
-                done();
-            });
-            event.emit(testArg);
-        });
-        it("creates new promises", (done: MochaDone) => {
-            let event = new EventProperty<string>();
-            let testArg1: string = "test1";
-            let testArg2: string = "test2";
-            event.next().then((arg: string) => {
-                expect(arg).to.equal(testArg1);
-                event.next().then((arg: string) => {
-                    expect(arg).to.equal(testArg2);
-                    event.next().then((arg: string) => {
-                        expect(arg).to.equal(testArg1);
-                        done();
-                    });
-                    event.emit(testArg1);
-                });
-                event.emit(testArg2);
-            });
-            event.emit(testArg1);
+
+        it("init handlers are invoked immediately", () => {
+            let event = new EventProperty.Void();
+            let flag = false;
+            event.init(() => { flag = true; });
+            event.emit();
+
+            // Because promise is resolved in the next event-loop iteration
+            expect(flag).to.equal(true);
         });
     });
-    it("EventProperty.make", (done: MochaDone) => {
-        class Test {
-            private event: EventProperty<string>;
-            public emitter: EventProperty.Emitter<string>;
-            constructor() {
-                [this.event, this.emitter] = EventProperty.make<string>();
+    describe("Factory", () => {
+        it("EventProperty.make()", (done: MochaDone) => {
+            class Test {
+                private event: EventProperty<string>;
+                public emitter: EventProperty.Emitter<string>;
+                constructor() {
+                    [this.event, this.emitter] = EventProperty.make<string>();
+                }
+                test() {
+                    this.event.emit("test");
+                }
             }
-            test() {
-                this.event.emit("test");
+            let instance = new Test();
+            instance.emitter.on(() => done());
+            instance.test();
+        });
+        it("EventProperty.split()", (done: MochaDone) => {
+            class Test {
+                private triggerEvent: EventProperty.EmitMethod<string>;
+                public event: EventProperty.Emitter<string>;
+                constructor() {
+                    [this.triggerEvent, this.event] = EventProperty.split<string>();
+                }
+                test() {
+                    this.triggerEvent("test");
+                }
             }
-        }
-        let instance = new Test();
-        instance.emitter.on(() => done());
-        instance.test();
+            let instance = new Test();
+            instance.event.on(() => done());
+            instance.test();
+        });
+        it("EventProperty.splitVoid()", (done: MochaDone) => {
+            class Test {
+                private triggerEvent: EventProperty.VoidEmitMethod;
+                public event: EventProperty.Emitter<void>;
+                constructor() {
+                    [this.triggerEvent, this.event] = EventProperty.splitVoid();
+                }
+                test() {
+                    this.triggerEvent();
+                }
+            }
+            let instance = new Test();
+            instance.event.on(() => done());
+            instance.test();
+        });
+    });
+    describe("timing", () => {
+
     });
 });
 

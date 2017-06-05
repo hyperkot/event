@@ -6,6 +6,7 @@
   "types": "lib/index",
   "scripts": {
     "test": "npm run build && mocha lib/test/*.js",
+    "test-beacon": "npm run build && mocha lib/test/beacon.js",
     "build": "npm run clean && tsc",
     "release": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs/* && jsdoc2md lib/event.js > docs/event.md",

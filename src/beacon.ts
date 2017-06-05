@@ -1,6 +1,6 @@
 /// <reference path="../typings/index.d.ts"/>
 
-import Event from "./event";
+import EventProperty from "./event";
 
 /**
  * Represents a model of a single property of type T. A basic element for constructing models.
@@ -9,31 +9,37 @@ import Event from "./event";
  * - Setting the same value will be ignored and won't trigger the 'changed' event.
  * - Can sync to another beacon. Whenever the value of one of the synced beacons changes
  *      the value of the other is changed accordingly.
+ * - Attempt to get a value before it was assigned results in exception. It is better to
+ *      pass initial value to the constructor
  */
 export class Beacon<T> {
 
-    private _changed: Event<T> = new Event<T>();
-    public get changed(): Event.Emitter<T> { return this._changed; };
+    private emitChanged: EventProperty.EmitMethod<T>;
+    public changed: EventProperty.Emitter<T>;
 
     private _priorValue: T;
-    get priorValue(): T { return this._priorValue; }
+    get priorValue(): T { return this._priorValue; };
 
     private _value: T;
     get value(): T { return this._value; }
     set value(value: T) {
-        if (this.value !== value) {
-            this._priorValue = this.value;
-            this.value = value;
-            this._changed.emit(this._value);
+        if (this._value !== value) {
+            this._priorValue = this._value;
+            this._value = value;
+            this.emitChanged(this._value);
         }
     }
 
-    private _isAssigned: boolean = false;
-    get isAssigned(): boolean { return this._isAssigned; }
+    constructor(value: T|Beacon<T>) {
+        [this.emitChanged, this.changed] = EventProperty.split<T>();
 
-    constructor(value?: T) {
-        this.changed.first.then(() => this._isAssigned = true);
-        if (arguments.length === 1) this.value = value;
+        if (value instanceof Beacon) {
+            this.syncTo(value);
+            this._priorValue = value._priorValue;
+        } else {
+            this._value = value;
+            this._priorValue = value;
+        }
     }
 
     syncTo(other: Beacon<T>) {
@@ -50,16 +56,20 @@ export class Beacon<T> {
         this.value = other.value;
     }
 
-    toString(): string {
+    toJSON(): string {
         return JSON.stringify(this.value, null, "\t");
+    }
+
+    fromJSON(json: string): void {
+        this.value = JSON.parse(json);
+    }
+
+    toString(): string {
+        return this.toJSON();
     }
 
     valueOf(): any {
         return this.value.valueOf();
-    }
-
-    fromString(str: string) {
-        this.value = JSON.parse(str);
     }
 }
 

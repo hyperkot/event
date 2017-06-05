@@ -76,8 +76,10 @@ _This library implements several additional features I deemed useful for my purp
 
 - __`once`__: listen to a single next occurrence of event, actually pretty common feature for any events.
 - __`next`__: `once` feature in form of a promise.
-- __`first`__: promise which is resolved when event is emitted for the first time, useful for
-    initialization events because you don't have to care to put a listener on it before the event occurs.
+- __`init`__: put a special handler which is invoked after the event was triggered fir the first time.
+    Argument from the first emit is passed to handler. Useful for initialization events because
+    you don't have to care to put a listener on it before the event occurs - if the event was already emitted
+    than provided callback will be invoked right away.
 - __`match`__: attach a listener which is invoked only if the events argument meets some condition.
     Usefull for stuff like keyboard events (listening to a certain key being pressed for example).
 - __`pipe`__: redirect all event occurrences to another `EventProperty`. Useful when you needed to simple
@@ -102,8 +104,7 @@ interface EventProperty<T> {
     pipe(destination: EventProperty.Emitter<T>): ListenerId;
     route(value: T|RegExp, destination: EventProperty.Emitter<T>): ListenerId;
     
-    first(): Promise<T>;
-    next(): Promise<T>;
+    init(handler: EventProperty.Handler<T>, context?: Object): void;
     
     off(handler: EventProperty.Handler<T>): void;
     off(handler: EventProperty.Handler<T>, context: Object): void;
@@ -157,13 +158,13 @@ Look for more examples in [tests](src/test/event.ts)
 ```typescript
     import EventProperty from 'event-property';
 
-    let init = new EventProperty.Void();
+    let initEvent = new EventProperty.Void();
     setTimeout(() => {
-        init.emit();
+        initEvent.emit();
     }, 5000);
     setTimeout(() => {
         // We don't have to worry about missing or not an already emitted 'init' event.
-        init.first.then(() => {
+        initEvent.init(() => {
             console.log('Doing stuff reliably after initialization');
         });
     }, Math.floor(Math.random() * 10000));
