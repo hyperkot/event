@@ -8,7 +8,6 @@ Provides methods to observe and to trigger(emit) events of that type.
 
 * [EventProperty](#EventProperty)
     * _instance_
-        * [.first](#EventProperty+first) ⇒ <code>Promise.&lt;T&gt;</code>
         * [.emit(eventArg)](#EventProperty+emit)
         * [.on(handler, [context])](#EventProperty+on) ⇒ <code>EventProperty.ListenerId</code>
         * [.once(handler, [context])](#EventProperty+once) ⇒ <code>EventProperty.ListenerId</code>
@@ -16,7 +15,7 @@ Provides methods to observe and to trigger(emit) events of that type.
         * [.matchOnce(value, handler, [context])](#EventProperty+matchOnce) ⇒ <code>EventProperty.ListenerId</code>
         * [.pipe(other)](#EventProperty+pipe) ⇒ <code>EventProperty.ListenerId</code>
         * [.route(matchValue, destination)](#EventProperty+route) ⇒ <code>EventProperty.ListenerId</code>
-        * [.next()](#EventProperty+next) ⇒ <code>Promise.&lt;T&gt;</code>
+        * [.init(handler, [context])](#EventProperty+init)
     * _static_
         * [.Void](#EventProperty.Void)
             * [new Void()](#new_EventProperty.Void_new)
@@ -25,12 +24,6 @@ Provides methods to observe and to trigger(emit) events of that type.
         * [.split()](#EventProperty.split)
         * [.splitVoid()](#EventProperty.splitVoid)
 
-<a name="EventProperty+first"></a>
-
-### eventProperty.first ⇒ <code>Promise.&lt;T&gt;</code>
-Stores promise which is resolved when this event is emitted for the first time.
-
-**Kind**: instance property of [<code>EventProperty</code>](#EventProperty)  
 <a name="EventProperty+emit"></a>
 
 ### eventProperty.emit(eventArg)
@@ -145,14 +138,20 @@ match-value must be present in event argument.
 | matchValue | <code>T</code> \| <code>RegExp</code> | value to match |
 | destination | <code>EventProperty.&lt;T&gt;</code> | target EventProperty |
 
-<a name="EventProperty+next"></a>
+<a name="EventProperty+init"></a>
 
-### eventProperty.next() ⇒ <code>Promise.&lt;T&gt;</code>
-Returns a promise which is resolved next time this event is emitted.
-Works as a promisified version of 'once'.
+### eventProperty.init(handler, [context])
+Adds an initialization handler. Initialization handlers are invoked during the very first
+emit of event in this EventProperty. If first emit already occurred then the handler is
+invoked immediately.
 
 **Kind**: instance method of [<code>EventProperty</code>](#EventProperty)  
-**See**: EventProperty.once  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| handler | <code>EventProperty.Handler.&lt;T&gt;</code> | callback to be invoked when event is emitted first time |
+| [context] | <code>Object</code> | handler will be invoked in this context |
+
 <a name="EventProperty.Void"></a>
 
 ### EventProperty.Void
