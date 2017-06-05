@@ -33,8 +33,8 @@
   "homepage": "https://github.com/hyperkot/event-property#readme",
   "dependencies": {},
   "devDependencies": {
-    "typescript": "latest",
+    "chai": "latest",
     "mocha": "latest",
-    "chai": "latest"
+    "typescript": "^2.3.4"
   }
 }
