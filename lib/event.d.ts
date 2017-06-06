@@ -1,12 +1,17 @@
 /// <reference path="../typings/index.d.ts" />
 /**
- * Represents a certain type of events.
- * Provides methods to observe and to trigger(emit) events of that type.
+ * Represents a certain kind of events.
+ * Provides methods to observe and to trigger(emit) that kind of events.
  */
 export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     private listeners;
     private initArg;
     private initHandlers;
+    private initDeferred;
+    /**
+     * A special property, indicating that the event was emitted at least once.
+     * @returns {boolean}
+     */
     readonly isInitialized: boolean;
     private idCounter;
     constructor();
@@ -104,11 +109,14 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * Adds an initialization handler. Initialization handlers are invoked during the very first
      * emit of event in this EventProperty. If first emit already occurred then the handler is
      * invoked immediately.
+     * This method returns a promise which may be used instead of passing a callback. Note that promise
+     * resolve and reject handler will be invoked only on the next event loop iteration while callback
+     * which is passed directly will beb invoked immediately and before any event-listeners.
      *
      * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
      * @param {Object} [context] - handler will be invoked in this context
      */
-    init(handler: EventProperty.Handler<T>, context?: Object): void;
+    init(handler?: EventProperty.Handler<T>, context?: Object): Promise<T>;
     /**
      * Removes all listeners that were attached with given handler and without a context.
      * Note: it will never remove any listener that was attached with a context.
@@ -313,8 +321,9 @@ export declare namespace EventProperty {
          *
          * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
          * @param {Object} [context] - handler will be invoked in this context
+         * @returns {
          */
-        init(handler: EventProperty.Handler<T>, context?: Object): void;
+        init(handler: EventProperty.Handler<T>, context?: Object): Promise<T>;
         /**
          * Removes all listeners that were attached with given handler and without a context.
          * Note: it will never remove any listener that was attached with a context.

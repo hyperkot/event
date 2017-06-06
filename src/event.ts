@@ -1,14 +1,22 @@
 /// <reference path="../typings/index.d.ts"/>
 
+import { Deferred } from 'ts-buns';
+
 /**
- * Represents a certain type of events.
- * Provides methods to observe and to trigger(emit) events of that type.
+ * Represents a certain kind of events.
+ * Provides methods to observe and to trigger(emit) that kind of events.
  */
 export class EventProperty<T> implements EventProperty.Emitter<T> {
     private listeners: EventProperty.HandlerDescriptor<T>[] = [];
 
     private initArg: T;
     private initHandlers: [EventProperty.Handler<T>, Object][] = [];
+    private initDeferred: Deferred<T> = new Deferred<T>();
+
+    /**
+     * A special property, indicating that the event was emitted at least once.
+     * @returns {boolean}
+     */
     get isInitialized(): boolean { return this.initHandlers === null; }
 
     private idCounter: EventProperty.ListenerId = 0;
@@ -32,7 +40,6 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
      * @param {T} eventArg - event argument, it's passed to each event handler.
      */
     emit(eventArg: T): void {
-        let resolveFirstTimeTrigger: boolean = false;
         let toInvoke: EventProperty.HandlerDescriptor<T>[];
 
         if (!this.isInitialized) {
@@ -42,6 +49,7 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
             initHandlers.forEach(([handler, context]: [EventProperty.Handler<T>, Object]) => {
                 handler.call(context || null, this.initArg);
             });
+            this.initDeferred.resolve(eventArg);
         }
 
         toInvoke = this.listeners.slice().filter((listener: EventProperty.HandlerDescriptor<T>) => {
@@ -163,16 +171,22 @@ export class EventProperty<T> implements EventProperty.Emitter<T> {
      * Adds an initialization handler. Initialization handlers are invoked during the very first
      * emit of event in this EventProperty. If first emit already occurred then the handler is
      * invoked immediately.
+     * This method returns a promise which may be used instead of passing a callback. Note that promise
+     * resolve and reject handler will be invoked only on the next event loop iteration while callback
+     * which is passed directly will beb invoked immediately and before any event-listeners.
      *
      * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
      * @param {Object} [context] - handler will be invoked in this context
      */
-    init(handler: EventProperty.Handler<T>, context?: Object) {
-        if (this.isInitialized) {
-            handler.call(context || null, this.initArg);
-        } else {
-            this.initHandlers.push([handler, context || null]);
+    init(handler?: EventProperty.Handler<T>, context?: Object): Promise<T> {
+        if (handler) {
+            if (this.isInitialized) {
+                handler.call(context || null, this.initArg);
+            } else {
+                this.initHandlers.push([handler, context || null]);
+            }
         }
+        return this.initDeferred.promise;
     }
 
     /**
@@ -484,8 +498,9 @@ export namespace EventProperty {
          *
          * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
          * @param {Object} [context] - handler will be invoked in this context
+         * @returns {
          */
-        init(handler: EventProperty.Handler<T>, context?: Object): void;
+        init(handler: EventProperty.Handler<T>, context?: Object): Promise<T>;
 
         /**
          * Removes all listeners that were attached with given handler and without a context.

@@ -31,10 +31,11 @@
     "url": "https://github.com/hyperkot/event-property/issues"
   },
   "homepage": "https://github.com/hyperkot/event-property#readme",
-  "dependencies": {},
+  "dependencies": {
+    "ts-buns": "^1.0.1"
+  },
   "devDependencies": {
     "chai": "latest",
-    "jspm": "^0.16.53",
     "mocha": "latest",
     "typescript": "^2.3.4"
   }

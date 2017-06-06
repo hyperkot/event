@@ -76,7 +76,7 @@ _This library implements several additional features I deemed useful for my purp
 
 - __`once`__: listen to a single next occurrence of event, actually pretty common feature for any events.
 - __`next`__: `once` feature in form of a promise.
-- __`init`__: put a special handler which is invoked after the event was triggered fir the first time.
+- __`init`__: adds a special handler which is invoked after the event was triggered for the first time.
     Argument from the first emit is passed to handler. Useful for initialization events because
     you don't have to care to put a listener on it before the event occurs - if the event was already emitted
     than provided callback will be invoked right away.
