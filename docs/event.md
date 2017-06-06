@@ -1,13 +1,14 @@
 <a name="EventProperty"></a>
 
 ## EventProperty
-Represents a certain type of events.
-Provides methods to observe and to trigger(emit) events of that type.
+Represents a certain kind of events.
+Provides methods to observe and to trigger(emit) that kind of events.
 
 **Kind**: global class  
 
 * [EventProperty](#EventProperty)
     * _instance_
+        * [.isInitialized](#EventProperty+isInitialized) ⇒ <code>boolean</code>
         * [.emit(eventArg)](#EventProperty+emit)
         * [.on(handler, [context])](#EventProperty+on) ⇒ <code>EventProperty.ListenerId</code>
         * [.once(handler, [context])](#EventProperty+once) ⇒ <code>EventProperty.ListenerId</code>
@@ -24,6 +25,12 @@ Provides methods to observe and to trigger(emit) events of that type.
         * [.split()](#EventProperty.split)
         * [.splitVoid()](#EventProperty.splitVoid)
 
+<a name="EventProperty+isInitialized"></a>
+
+### eventProperty.isInitialized ⇒ <code>boolean</code>
+A special property, indicating that the event was emitted at least once.
+
+**Kind**: instance property of [<code>EventProperty</code>](#EventProperty)  
 <a name="EventProperty+emit"></a>
 
 ### eventProperty.emit(eventArg)
@@ -144,6 +151,9 @@ match-value must be present in event argument.
 Adds an initialization handler. Initialization handlers are invoked during the very first
 emit of event in this EventProperty. If first emit already occurred then the handler is
 invoked immediately.
+This method returns a promise which may be used instead of passing a callback. Note that promise
+resolve and reject handler will be invoked only on the next event loop iteration while callback
+which is passed directly will beb invoked immediately and before any event-listeners.
 
 **Kind**: instance method of [<code>EventProperty</code>](#EventProperty)  
 
