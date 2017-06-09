@@ -1,11 +1,12 @@
-export * from "./event";
-
 import EventProperty from "./event";
-import Beacon from "./beacon";
+import Beacon = EventProperty.Beacon;
+import Trigger = EventProperty.Trigger;
 
 export {
-    Beacon as Beacon,
-    EventProperty as EventProperty
-}
+    EventProperty,
+    Beacon,
+    Trigger
+};
+
 
 export default EventProperty;

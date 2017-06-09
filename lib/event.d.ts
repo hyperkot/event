@@ -1,9 +1,14 @@
 /// <reference path="../typings/index.d.ts" />
+/// <reference path="interfaces.d.ts" />
+import Interfaces from "./interfaces";
+import Emitter = Interfaces.Emitter;
+import ListenerId = Interfaces.ListenerId;
+import Handler = Interfaces.Handler;
 /**
  * Represents a certain kind of events.
  * Provides methods to observe and to trigger(emit) that kind of events.
  */
-export declare class EventProperty<T> implements EventProperty.Emitter<T> {
+export declare class EventProperty<T> implements Emitter<T> {
     private listeners;
     private initArg;
     private initHandlers;
@@ -30,20 +35,20 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     /**
      * Adds a listener.
      *
-     * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
+     * @param {Handler<T>} handler - callback to be called when an event is emitted
      * @param {Object} [context] - context to be used when calling handler. null by default.
-     * @returns {EventProperty.ListenerId} - number, identifying new event listener.
+     * @returns {ListenerId} - number, identifying new event listener.
      */
-    on(handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
+    on(handler: Handler<T>, context?: Object): ListenerId;
     /**
      * Adds a listener. This listener will be immediately removed after it's
      * invoked for the first time.
      *
-     * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
+     * @param {Handler<T>} handler - callback to be called when an event is emitted
      * @param {Object} [context] - context to be used when calling handler. null by default.
-     * @returns {EventProperty.ListenerId} - number, identifying new event listener.
+     * @returns {ListenerId} - number, identifying new event listener.
      */
-    once(handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
+    once(handler: Handler<T>, context?: Object): ListenerId;
     /**
      * Adds a listener. This listener will be invoked only if event argument
      * matches given value.
@@ -55,13 +60,13 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * match-value must be present in event argument.
      *
      * @param {T|RegExp} value - handler is invoked only if event argument matches this value
-     * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
+     * @param {Handler<T>} handler - callback to be called when an event is emitted
      * @param {Object} [context] - context to be used when calling handler. null by default.
-     * @returns {EventProperty.ListenerId} - number, identifying new event listener.
+     * @returns {ListenerId} - number, identifying new event listener.
      *
      * @see objectMatch
      */
-    match(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
+    match(value: T | RegExp, handler: Handler<T>, context?: Object): ListenerId;
     /**
      * Adds a listener for this event type. This listener will be invoked only if event argument
      * matches given value. This listener will be immediately removed after it's invoked
@@ -74,23 +79,23 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      * match-value must be present in event argument.
      *
      * @param {T|RegExp} value - handler is invoked only if event argument matches this value
-     * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
+     * @param {Handler<T>} handler - callback to be called when an event is emitted
      * @param {Object} [context] - context to be used when calling handler. null by default.
-     * @returns {EventProperty.ListenerId} - number, identifying new event listener.
+     * @returns {ListenerId} - number, identifying new event listener.
      *
      * @see PropertyEvent.match, PropertyEvent.once
      */
-    matchOnce(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): EventProperty.ListenerId;
+    matchOnce(value: T | RegExp, handler: Handler<T>, context?: Object): ListenerId;
     /**
-     * "Pipes" EventProperty to other EventProperty. This means that whenever this event
+     * "Pipes" EventProperty to other  This means that whenever this event
      * is emitted it is passed to that other EventProperty which emits it too.
      *
      * @param {EventProperty<T>} other
-     * @returns {EventProperty.ListenerId}
+     * @returns {ListenerId}
      */
-    pipe(other: EventProperty<T>): EventProperty.ListenerId;
+    pipe(other: EventProperty<T>): ListenerId;
     /**
-     * Pipe only events with matching argument to destination EventProperty.
+     * Pipe only events with matching argument to destination
      *
      * Note: what "matching" means is not documented well yet since it is subject to change.
      * For now you should assume that for plain types (boolean, number, string) it is
@@ -100,38 +105,38 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
      *
      * @param {T|RegExp} matchValue - value to match
      * @param {EventProperty<T>} destination - target EventProperty
-     * @returns {EventProperty.ListenerId}
+     * @returns {ListenerId}
      *
-     * @see EventProperty.pipe, EventProperty.match
+     * @see pipe, match
      */
-    route(matchValue: T | RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
+    route(matchValue: T | RegExp, destination: EventProperty<T>): ListenerId;
     /**
      * Adds an initialization handler. Initialization handlers are invoked during the very first
-     * emit of event in this EventProperty. If first emit already occurred then the handler is
+     * emit of event in this  If first emit already occurred then the handler is
      * invoked immediately.
      * This method returns a promise which may be used instead of passing a callback. Note that promise
      * resolve and reject handler will be invoked only on the next event loop iteration while callback
      * which is passed directly will beb invoked immediately and before any event-listeners.
      *
-     * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
+     * @param {Handler<T>} handler - callback to be invoked when event is emitted first time
      * @param {Object} [context] - handler will be invoked in this context
      */
-    init(handler?: EventProperty.Handler<T>, context?: Object): Promise<T>;
+    init(handler?: Handler<T>, context?: Object): Promise<T>;
     /**
      * Removes all listeners that were attached with given handler and without a context.
      * Note: it will never remove any listener that was attached with a context.
      *
-     * @param {EventProperty.Handler<T>} handler - remove listeners having this handler
+     * @param {Handler<T>} handler - remove listeners having this handler
      */
-    off(handler: EventProperty.Handler<T>): void;
+    off(handler: Handler<T>): void;
     /**
      * Removes listeners that were attached with given handler and context.
      * Note: it will never remove any listener that was attached without a context.
      *
-     * @param {EventProperty.Handler<T>} handler - remove listeners having this handler
+     * @param {Handler<T>} handler - remove listeners having this handler
      * @param {Object} [context] - remove only listeners having this context
      */
-    off(handler: EventProperty.Handler<T>, context: Object): void;
+    off(handler: Handler<T>, context: Object): void;
     /**
      * Removes all listeners having this context
      *
@@ -141,11 +146,11 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     /**
      * Removes listener with given id.
      *
-     * @param {EventProperty.ListenerId} id
+     * @param {ListenerId} id
      */
-    off(id: EventProperty.ListenerId): void;
+    off(id: ListenerId): void;
     /**
-     * Remove pipes created for other EventProperty.
+     * Remove pipes created for other
      *
      * @param {EventProperty} destination
      */
@@ -158,247 +163,52 @@ export declare class EventProperty<T> implements EventProperty.Emitter<T> {
     private addListener(options);
 }
 export declare namespace EventProperty {
-    /**
-     * The callback format used for adding listeners to EventProperty.
-     */
-    interface Handler<T> {
-        (eventArg: T): void;
-    }
-    /**
-     * The format of the EventProperty.emit method.
-     */
-    interface EmitMethod<T> {
-        (eventArg: T): void;
-    }
-    /**
-     * The format of the EventProperty:emit method for T=void.
-     */
-    interface VoidEmitMethod {
-        (): void;
-    }
-    /**
-     * This type is used just to emphasize the meaning of the value.
-     * Otherwise listeners ids are regular numbers.
-     */
-    type ListenerId = number;
-    /**
-     * This method is used just to emphasize the meaning of the value.
-     * Otherwise we could just use typeof id === "number" directly.
-     */
+    type Emitter<T> = Interfaces.Emitter<T>;
+    type HandlerDescriptor<T> = Interfaces.HandlerDescriptor<T>;
+    type ListenerId = Interfaces.ListenerId;
     function isListenerId(id: any): boolean;
-    /**
-     * The full configuration for a specific listener. It controls the way
-     * the relevant event-handler function is invoked.
-     */
-    interface HandlerOptions<T> {
-        /**
-         * The actual handler function to be called when the event occurs.
-         */
-        handler: EventProperty.Handler<T>;
-        /**
-         * If this flag is set - the event handler will remove itself from
-         * the event after first invocation.
-         */
-        once?: boolean;
-        /**
-         * If this field is specified, then handler will be called with that context.
-         */
-        context?: Object;
-        /**
-         * Always used in combination with following parameter 'matchValue' and is a
-         * flag, which means(if set) that only event invocations with argument matching
-         * 'matchValue' should be passed to the handler function.
-         *
-         * What "matching" means is not documented well yet since it is subject to change.
-         * For now you may assume that for plain types (boolean, number, string) it is
-         * strict equality.
-         */
-        onlyMatching?: boolean;
-        /**
-         * The value, to be matched if the 'onlyMatching' flag is set.
-         */
-        matchValue?: T | RegExp;
-    }
-    /**
-     * This is the object which represents an existing handler internally in EventProperty object.
-     *
-     * EventProperty stores listeners as HandlerOptions + listenerId.
-     */
-    interface HandlerDescriptor<T> extends HandlerOptions<T> {
-        id: ListenerId;
-    }
-    /**
-     * An EventProperty interface without the 'emit' method.
-     *
-     * It is a good practice to provide public access to EventProperties in this form
-     * and not in the original EventProperty form.
-     * EventProperty usually relates to some class and only that class should be able to
-     * trigger/emit the event. On the other hand anyone should be able to listen to this
-     * event. This library offers special interface for this purpose and a few utility
-     * functions (make, split. splitVoid).
-     *
-     * The idea is to create a private EventProperty member and public
-     * EventProperty.Emitter getter which return that private member.
-     * You don't have to do it if you think it's too cumbersome though.
-     */
-    interface Emitter<T> {
-        /**
-         * Adds a listener for this event type.
-         *
-         * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
-         * @param {Object} [context] - context to be used when calling handler. null by default.
-         * @returns {EventProperty.ListenerId} - number, identifying new event listener.
-         */
-        on(handler: EventProperty.Handler<T>, context?: Object): ListenerId;
-        /**
-         * Adds a listener for this event type. This listener will be immediately removed after it's
-         * invoked for the first time.
-         *
-         * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
-         * @param {Object} [context] - context to be used when calling handler. null by default.
-         * @returns {EventProperty.ListenerId} - number, identifying new event listener.
-         */
-        once(handler: EventProperty.Handler<T>, context?: Object): ListenerId;
-        /**
-         * Adds a listener for this event type. This listener will be called only if event argument
-         * matches given value.
-         *
-         * Note: what "matching" means is not documented well yet since it is subject to change.
-         * For now you should assume that for plain types (boolean, number, string) it is
-         * strict equality. For objects it is like deep strict equality except that actual
-         * event argument may have more fields than match-value(proto). But all fields from
-         * match-value must be present in event argument.
-         *
-         * @param {T|RegExp} value - handler is invoked only if event argument matches this value
-         * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
-         * @param {Object} [context] - context to be used when calling handler. null by default.
-         * @returns {EventProperty.ListenerId} - number, identifying new event listener.
-         */
-        match(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
-        /**
-         * Adds a listener for this event type. This listener will be invoked only if event argument
-         * matches given value. This listener will be immediately removed after it's invoked
-         * for the first time.
-         *
-         * Note: what "matching" means is not documented well yet since it is subject to change.
-         * For now you should assume that for plain types (boolean, number, string) it is
-         * strict equality. For objects it is like deep strict equality except that actual
-         * event argument may have more fields than match-value(proto). But all fields from
-         * match-value must be present in event argument.
-         *
-         * @param {T|RegExp} value - handler is invoked only if event argument matches this value
-         * @param {EventProperty.Handler<T>} handler - callback to be called when an event is emitted
-         * @param {Object} [context] - context to be used when calling handler. null by default.
-         * @returns {EventProperty.ListenerId} - number, identifying new event listener.
-         */
-        matchOnce(value: T | RegExp, handler: EventProperty.Handler<T>, context?: Object): ListenerId;
-        /**
-         * "Pipes" EventProperty to other EventProperty. This means that whenever this event
-         * is emitted it is passed to that other EventProperty which emits it too.
-         *
-         * @param {EventProperty<T>} other
-         * @returns {EventProperty.ListenerId}
-         */
-        pipe(other: EventProperty<T>): EventProperty.ListenerId;
-        /**
-         * Pipe only events with matching argument to destination EventProperty.
-         *
-         * Note: what "matching" means is not documented well yet since it is subject to change.
-         * For now you should assume that for plain types (boolean, number, string) it is
-         * strict equality. For objects it is like deep strict equality except that actual
-         * event argument may have more fields than match-value(proto). But all fields from
-         * match-value must be present in event argument.
-         *
-         * @param {T|RegExp} matchValue - value to match
-         * @param {EventProperty<T>} destination - target EventProperty
-         * @returns {EventProperty.ListenerId}
-         */
-        route(matchValue: T | RegExp, destination: EventProperty<T>): EventProperty.ListenerId;
-        /**
-         * Adds an initialization handler. Initialization handlers are invoked during the very first
-         * emit of event in this EventProperty. If first emit already occurred then the handler is
-         * invoked immediately.
-         *
-         * @param {EventProperty.Handler<T>} handler - callback to be invoked when event is emitted first time
-         * @param {Object} [context] - handler will be invoked in this context
-         * @returns {
-         */
-        init(handler: EventProperty.Handler<T>, context?: Object): Promise<T>;
-        /**
-         * Removes all listeners that were attached with given handler and without a context.
-         * Note: it will never remove any listener that was attached with a context.
-         *
-         * @param {EventProperty.Handler<T>} handler - remove listeners having this handler
-         */
-        off(handler: EventProperty.Handler<T>): void;
-        /**
-         * Removes listeners that were attached with given handler and context.
-         * Note: it will never remove any listener that was attached without a context.
-         *
-         * @param {EventProperty.Handler<T>} handler - remove listeners having this handler
-         * @param {Object} [context] - remove only listeners having this context
-         */
-        off(handler: EventProperty.Handler<T>, context: Object): void;
-        /**
-         * Removes all listeners having this context
-         *
-         * @param {Object} context
-         */
-        off(context: Object): void;
-        /**
-         * Removes listener with given id.
-         *
-         * @param {EventProperty.ListenerId} id
-         */
-        off(id: EventProperty.ListenerId): void;
-        /**
-         * Remove pipes created for other EventProperty.
-         *
-         * @param {EventProperty} destination
-         */
-        off(destination: EventProperty<T>): void;
-        /**
-         * Remove all listeners.
-         */
-        off(): void;
-    }
+    type HandlerOptions<T> = Interfaces.HandlerOptions<T>;
+    type EmitMethod<T> = Interfaces.EmitMethod<T>;
+    type VoidEmitMethod = Interfaces.VoidEmitMethod;
+    type Handler<T> = Interfaces.Handler<T>;
+    type PropertyModel<T> = Interfaces.PropertyModel<T>;
     /**
      * Creates a pair: an EventProperty instance to be used internally in a class
      * and an Emitter-interface to be used as public / accessible property.
      * They both actually represent the same EventProperty object.
      *
-     * returns {[EventProperty,EventProperty.Emitter<T>]}
+     * returns {[EventProperty,Emitter<T>]}
      *
      * @method EventProperty.make
      * @static
      */
-    function make<T>(): [EventProperty<T>, EventProperty.Emitter<T>];
+    function make<T>(): [EventProperty<T>, Emitter<T>];
     /**
      * Creates an EventProperty object and splits it into emitter-function and
      * Emitter-interface. Use emitter function to emit the event and Emitter-interface
      * to add and remove listeners of that event.
      *
-     * returns {[EventProperty.EmitMethod<T>,EventProperty.Emitter<T>]}
+     * returns {[EmitMethod<T>,Emitter<T>]}
      *
      * @method EventProperty.split
      * @static
      */
-    function split<T>(): [EventProperty.EmitMethod<T>, EventProperty.Emitter<T>];
+    function split<T>(): [EmitMethod<T>, Emitter<T>];
     /**
      * Creates an EventProperty object and splits it into emitter-function and
      * Emitter-interface. Special version for void-typed events.
      *
-     * returns {[EventProperty.VoidEmitMethod,EventProperty.Emitter<T>]}
+     * returns {[VoidEmitMethod,Emitter<T>]}
      *
      * @method EventProperty.splitVoid
      * @static
      */
-    function splitVoid(): [EventProperty.VoidEmitMethod, EventProperty.Emitter<void>];
+    function splitVoid(): [VoidEmitMethod, Emitter<void>];
     /**
      * Special subclass of EventProperty for void type - allows calling emit without arguments.
      * Extends {@link EventProperty}
      *
-     * @class EventProperty.Void
+     * @class Void
      * @static
      * @see {EventProperty}
      */
@@ -407,10 +217,35 @@ export declare namespace EventProperty {
         /**
          * Emits an event invoking all listeners.
          *
-         * @method EventProperty.Void#emit
+         * @method Void#emit
          * @see {EventProperty#emit}
          */
         emit(): void;
     }
+    /**
+     * Represents a model of a single property of type T. A basic element for constructing models.
+     * - Property can be retrieved/changed by using the .value property of the beacon.
+     * - Setting new value will trigger the 'changed' event.
+     * - Setting the same value will be ignored and won't trigger the 'changed' event.
+     * - Can sync to another beacon. Whenever the value of one of the synced beacons changes
+     *      the value of the other is changed accordingly.
+     * - Attempt to get a value before it was assigned results in exception. It is better to
+     *      pass initial value to the constructor
+     */
+    class Beacon<T> implements Interfaces.PropertyModel<T> {
+        private emitChanged;
+        changed: Interfaces.Emitter<T>;
+        private _priorValue;
+        readonly priorValue: T;
+        private _value;
+        value: T;
+        constructor(value: T | Beacon<T>);
+        syncTo(other: Beacon<T>): void;
+        toJSON(): string;
+        fromJSON(json: string): void;
+        toString(): string;
+        valueOf(): any;
+    }
+    function Trigger<T>(object: Object, key: string): (arg: T) => void;
 }
 export default EventProperty;

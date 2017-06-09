@@ -3,7 +3,7 @@
   "version": "1.2.3",
   "description": "Alternative approach to implementing events concept. ",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "lib/index",
   "scripts": {
     "test": "npm run build && mocha lib/test/*.js",
     "test-beacon": "npm run build && mocha lib/test/beacon.js",

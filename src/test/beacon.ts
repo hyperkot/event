@@ -1,7 +1,7 @@
 /// <reference path="../../typings/index.d.ts"/>
 
-import {expect, assert} from "chai";
-import {Beacon} from "../beacon";
+import {expect} from "chai";
+import {Beacon} from "..";
 
 describe("Beacon", () => {
     it("initiall value", () => {
